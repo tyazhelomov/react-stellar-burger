@@ -1,0 +1,60 @@
+.section {
+  width: 600px;
+}
+
+.order {
+  border: 2px solid #4C4CFF;
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 0;
+  max-height: 60vh;
+}
+
+.burger {
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.burger::-webkit-scrollbar {
+	width: 12px;
+}
+.burger::-webkit-scrollbar-track {
+	background: #2F2F37;
+  margin: 0;
+  direction: ltr;
+}
+.burger::-webkit-scrollbar-thumb {
+	background: #8585AD;
+	border: 3px solid #2F2F37;
+	border-radius: 6px;
+}
+
+.element {
+  display: flex;
+  margin-right: 4px;
+  margin-left: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.locked {
+  margin-right: 16px;
+  margin-left: auto;
+}
+
+.count {
+  display: flex;
+  margin: 16px;
+  justify-content: end;
+  align-items: center;
+  gap: 40px;
+}
+
+.sum {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

@@ -1,0 +1,10 @@
+.block {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.order_number {
+  margin: 0 auto;
+  text-shadow: 0px 0px 32px #3333FF80;
+}

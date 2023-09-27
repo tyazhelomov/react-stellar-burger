@@ -1,0 +1,23 @@
+.item {
+  max-height: 302px;
+  max-width: 265px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.image {
+  height: 120px;
+  width: 240px;
+}
+
+.price {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
