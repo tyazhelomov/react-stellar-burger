@@ -5,6 +5,9 @@ import BurgerIngredients from "../burger-ingredients/burger-ingredients";
 import BurgerConstructor from "../burger-constructor/burger-constructor";
 import React from "react";
 import Modal from "../modal/modal";
+import ModalElement from "../modal-element/modal-element";
+import IngredientDetails from "../ingredient-details/ingredient-details";
+import OrderDetails from "../order-details/order-details";
 
 export const TAB_VALUES = {
   bun: 'bun',
@@ -90,7 +93,13 @@ function App() {
 
   React.useEffect(() => {
     fetch(URL)
-      .then(data => data.json())
+      .then(res => {
+        if (res.ok) {
+            return res.json();
+        }
+
+        return Promise.reject(`Ошибка ${JSON.stringify(res)}`);
+      })
       .then(data => filterIngredients(data.data))
       .then(data => {
         setIngredients(data);
@@ -100,7 +109,7 @@ function App() {
         }
         setChosenIngredients(newChosenIngredients);
       })
-      .catch((err) => console.log(err));
+      .catch(console.error);
   }, [])
 
   return (
@@ -110,7 +119,14 @@ function App() {
         <BurgerIngredients ingredients={ingredients} chosenIngredients={chosenIngredients} addIngredient={addIngredient} openModal={openModal}/>
         <BurgerConstructor chosenIngredients={chosenIngredients} removeIngredient={removeIngredient} removeAllIngredients={removeAllIngredients} openModal={openModal}/>
       </main>
-        { isVisibleModal && <Modal closeModal={closeModal} modalInfo={modalInfo}/> }
+        { isVisibleModal && 
+          <Modal>
+            <ModalElement modalInfo={modalInfo} closeModal={closeModal}>
+              { modalInfo?.ingredient && <IngredientDetails modalInfo={ modalInfo } /> }
+              { modalInfo?.order && <OrderDetails modalInfo={ modalInfo } />}
+            </ModalElement>
+          </Modal>
+        }
     </div>
   );
 }

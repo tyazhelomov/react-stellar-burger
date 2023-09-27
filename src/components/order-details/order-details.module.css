@@ -8,3 +8,22 @@
   margin: 0 auto;
   text-shadow: 0px 0px 32px #3333FF80;
 }
+
+.img {
+  max-width: 120px;
+  margin: 50px auto;
+}
+
+.order_id {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.ready_to_cook {
+  text-align: center;
+}
+
+.waiting_text {
+  text-align: center;
+  margin-top: 10px;
+}

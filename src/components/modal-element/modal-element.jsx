@@ -1,27 +1,27 @@
 import React from "react";
 import styles from './modal-element.module.css';
 import { CloseIcon } from "@ya.praktikum/react-developer-burger-ui-components";
-import IngredientDetails from "../ingredient-details/ingredient-details";
-import OrderDetails from "../order-details/order-details";
 import { funcPropType, modalInfoPropType } from "../../utils/prop-types";
+import ModalOverlay from "../modal-overlay/modal-overlay";
 
-function ModalElement({ closeModal, modalInfo }) {
-  const closeByKey = React.useCallback((e) => {
-    if (e.code === 'Escape') {
-      closeModal();
-    }
-  }, [closeModal])
+function ModalElement({ children, closeModal, modalInfo }) {
 
-  React.useEffect(()=>{
+  React.useEffect(() => {
+    const closeByKey = (e) => {
+      if (e.code === 'Escape') {
+        closeModal();
+      }
+    };
+
     document.addEventListener("keydown", closeByKey);
 
     return () => {
       document.removeEventListener("keydown", closeByKey);
     }
-  }, [closeByKey])
+  }, [closeModal])
 
   return (
-    <div className={styles.overlay} onClick={closeModal}>
+    <ModalOverlay onClick={closeModal}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}> 
         <div className={styles.header}>
           <p className="text text_type_main-large">
@@ -29,10 +29,9 @@ function ModalElement({ closeModal, modalInfo }) {
           </p>
           <CloseIcon type="primary" onClick={closeModal}/>
         </div>
-        { modalInfo?.ingredient && <IngredientDetails modalInfo={ modalInfo } /> }
-        { modalInfo?.order && <OrderDetails modalInfo={ modalInfo } />}
+        { children }
       </div>
-    </div>
+    </ModalOverlay>
   )
 }
 

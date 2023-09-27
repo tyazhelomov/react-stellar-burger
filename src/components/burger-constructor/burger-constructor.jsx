@@ -9,7 +9,7 @@ function BurgerConstructor({ chosenIngredients, removeIngredient, removeAllIngre
     const [bun] = chosenIngredients[TAB_VALUES.bun];
     const other = chosenIngredients[TAB_VALUES.other] || [];
     elements.push(
-      <div className={styles.locked}>
+      <div className={styles.locked} key={`${bun._id}_up`}>
         <ConstructorElement
           type="top"
           isLocked={true}
@@ -20,9 +20,9 @@ function BurgerConstructor({ chosenIngredients, removeIngredient, removeAllIngre
       </div>
     )
     elements.push(
-      <div className={styles.burger}>
-        { other.map((element, index) => 
-          <div className={styles.element} key={index}>
+      <div className={styles.burger} key={'ingredients'}>
+        { other.map((element) => 
+          <div className={styles.element} key={element._id}>
             <DragIcon type="primary" />
             <ConstructorElement
               text={element.name}
@@ -35,7 +35,7 @@ function BurgerConstructor({ chosenIngredients, removeIngredient, removeAllIngre
       </div>
     )
     elements.push(
-      <div className={styles.locked}>
+      <div className={styles.locked} key={`${bun._id}_down`}>
         <ConstructorElement
           type="bottom"
           isLocked={true}

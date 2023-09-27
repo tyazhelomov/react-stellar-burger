@@ -26,7 +26,7 @@ const BurgerIngredients = ({ ingredients, chosenIngredients, addIngredient, open
           </div>
           <div className={styles.container}>
             {
-              ingredients[element].map((item, index) => <Ingredient key={index} chosenIngredients={chosenIngredients} element={item} addIngredient={addIngredient} openModal={openModal}/>)
+              ingredients[element].map((item, index) => <Ingredient key={item._id} chosenIngredients={chosenIngredients} element={item} addIngredient={addIngredient} openModal={openModal}/>)
             }
           </div>
         </div>
@@ -42,7 +42,7 @@ const BurgerIngredients = ({ ingredients, chosenIngredients, addIngredient, open
         Соберите бургер
       </h1>
       <div className={styles.ingredients}>
-        <div style={{ display: 'flex' }}>
+        <div className={styles.tab}>
           <Tab value={TAB_VALUES.bun} active={current === TAB_VALUES.bun} onClick={setCurrent}>
             {TAB_NAMES.bun}
           </Tab>

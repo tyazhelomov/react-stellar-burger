@@ -1,13 +1,14 @@
 import ReactDOM from "react-dom";
-import ModalElement from "../modal-element/modal-element";
 import { funcPropType, modalInfoPropType } from "../../utils/prop-types";
 
 const modalRoot = document.getElementById("modal");
 
-const Modal = ({ modalInfo, closeModal }) => {
+const Modal = ({children}) => {
   return ReactDOM.createPortal(
       (
-        <ModalElement modalInfo={modalInfo} closeModal={closeModal}/>
+        <>
+          {children}
+        </>
       ), 
       modalRoot
   );
