@@ -1,0 +1,20 @@
+.modal {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 520px;
+  min-height: 400px;
+  background-color: #1C1C21;
+  border-radius: 20px;
+  padding: 40px;
+  z-index: 2;
+}
+
+.header {
+  height: 64px;
+  width: 100%;
+  display: flex;
+  gap: 36px;
+  justify-content: space-between;
+  align-items: center;
+}
