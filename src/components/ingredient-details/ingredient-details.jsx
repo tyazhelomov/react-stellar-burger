@@ -2,7 +2,6 @@ import { modalInfoPropType } from '../../utils/prop-types';
 import styles from './ingredient-details.module.css';
 
 function IngredientDetails({ modalInfo }) {
-  console.log(modalInfo)
   return (
     <div className={styles.block}>
       <img src={modalInfo.element.image_large} className={styles.img} alt={modalInfo.element.name}></img>

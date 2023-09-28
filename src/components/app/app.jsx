@@ -5,7 +5,6 @@ import BurgerIngredients from "../burger-ingredients/burger-ingredients";
 import BurgerConstructor from "../burger-constructor/burger-constructor";
 import React from "react";
 import Modal from "../modal/modal";
-import ModalElement from "../modal-element/modal-element";
 import IngredientDetails from "../ingredient-details/ingredient-details";
 import OrderDetails from "../order-details/order-details";
 
@@ -120,11 +119,9 @@ function App() {
         <BurgerConstructor chosenIngredients={chosenIngredients} removeIngredient={removeIngredient} removeAllIngredients={removeAllIngredients} openModal={openModal}/>
       </main>
         { isVisibleModal && 
-          <Modal>
-            <ModalElement modalInfo={modalInfo} closeModal={closeModal}>
+          <Modal modalInfo={modalInfo} closeModal={closeModal}>
               { modalInfo?.ingredient && <IngredientDetails modalInfo={ modalInfo } /> }
               { modalInfo?.order && <OrderDetails modalInfo={ modalInfo } />}
-            </ModalElement>
           </Modal>
         }
     </div>
