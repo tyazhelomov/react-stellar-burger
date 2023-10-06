@@ -2,11 +2,20 @@ import React from "react";
 import ReactDOM from "react-dom";
 import styles from './modal.module.css';
 import { CloseIcon } from "@ya.praktikum/react-developer-burger-ui-components";
-import { funcPropType, modalInfoPropType } from "../../utils/prop-types";
 import ModalOverlay from "../modal-overlay/modal-overlay";
+import { IsVisibleModalContext, ModalInfoContext } from '../../services/appContext';
 const modalRoot = document.getElementById("modal");
 
-function Modal({ children, closeModal, modalInfo }) {
+function Modal({ children }) {
+
+  const { isVisibleModalDispatcher } = React.useContext(IsVisibleModalContext);
+  const { modalInfo, modalInfoDispatcher } = React.useContext(ModalInfoContext);
+
+  const closeModal = React.useCallback(() => {
+    modalInfoDispatcher({ type: 'remove' });
+    isVisibleModalDispatcher({ type: 'close' });
+  }, [modalInfoDispatcher, isVisibleModalDispatcher]);
+
   React.useEffect(() => {
     const closeByKey = (e) => {
       if (e.code === 'Escape') {
@@ -40,8 +49,3 @@ function Modal({ children, closeModal, modalInfo }) {
 }
 
 export default Modal;
-
-Modal.propTypes = {
-  modalInfo: modalInfoPropType,
-  closeModal: funcPropType,
-}; 

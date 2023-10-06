@@ -7,6 +7,7 @@ import React from "react";
 import Modal from "../modal/modal";
 import IngredientDetails from "../ingredient-details/ingredient-details";
 import OrderDetails from "../order-details/order-details";
+import { IsVisibleModalContext, ModalInfoContext, IngredientsContext, ChosenIngredientsContext } from '../../services/appContext';
 
 export const TAB_VALUES = {
   bun: 'bun',
@@ -32,63 +33,63 @@ function App() {
     return ingredients;
   }
 
-  const [isVisibleModal, setIsVisibleModal] = React.useState(false);
-  const [modalInfo, setModalInfo] = React.useState();
-  const openModal = element => {
-    setModalInfo(element);
-    setIsVisibleModal(true);
-  };
-  const closeModal = () => {
-    setModalInfo();
-    setIsVisibleModal(false)
-  };
-  const [ingredients, setIngredients] = React.useState(filterIngredients(data));
-  const [bun] = Object.values(ingredients[TAB_VALUES.bun]);
-  const [chosenIngredients, setChosenIngredients] = React.useState({
-    [TAB_VALUES.bun]: [{ ...bun, count: 1 }],
-  });
+  const isVisibleModalInitialState = { isVisible: false };
 
-  const addIngredient = (e, element) => {
-    e.preventDefault();
-    const type = element.type === TAB_VALUES.bun ? element.type : TAB_VALUES.other;
-    const id = element._id;
-    let newChosenIngredients = { ...chosenIngredients };
-
-    if (!newChosenIngredients[type]) {
-      newChosenIngredients[type] = [];  
-      newChosenIngredients[type].push({ ...element, count: 1 });
-    } else {
-      if (newChosenIngredients[type]) {
-        const el = newChosenIngredients[type].find((item) => item._id === id)
-
-        if (el && type !== TAB_VALUES.bun) {
-          el.count++;
-        } else {
-          if (type !== TAB_VALUES.bun) {
-            newChosenIngredients[type].push({ ...element, count: 1 });
-          } else {
-            newChosenIngredients[type] = [{ ...element, count: 1 }];  
-          }
-        }
-      }
+  const isModalVisibleReducer = (state, action) => {
+    switch (action.type) {
+      case 'open':
+        return { isVisible: true };
+      case 'close':
+        return isVisibleModalInitialState;
+      default: 
+      return isVisibleModalInitialState;
     }
-
-    setChosenIngredients(newChosenIngredients)
   }
+  const [isVisibleModal, isVisibleModalDispatcher] = React.useReducer(isModalVisibleReducer, isVisibleModalInitialState);
 
-  const removeIngredient = (ingredient) => {
-    const id = ingredient._id;
-    const addedIngredients = { ...chosenIngredients };
-    const index = addedIngredients[TAB_VALUES.other].findIndex((item) => item._id === id);
-    addedIngredients[TAB_VALUES.other].splice(index, 1);
-    setChosenIngredients(addedIngredients);
-  }
+  const modalInfoInitialState = {};
 
-  const removeAllIngredients = () => {
-    setChosenIngredients({
-      [TAB_VALUES.bun]: [{ ...bun, count: 1 }],
-    });
+  const modalReducer = (state, action) => {
+    switch (action.type) {
+      case 'add':
+        return action.data;
+      case 'remove':
+        return modalInfoInitialState;
+      default: 
+      return modalInfoInitialState;
+    }
   }
+  const [modalInfo, modalInfoDispatcher] = React.useReducer(modalReducer, modalInfoInitialState);
+  const ingredientsInitialState = filterIngredients(data);
+
+  const ingredientsReducer = (state, action) => {
+    switch (action.type) {
+      case 'set':
+        return action.data;
+      default: 
+      return ingredientsInitialState;
+    }
+  }
+  const [ingredients, ingredientsDispatcher] = React.useReducer(ingredientsReducer, ingredientsInitialState);
+  const [bun] = Object.values(ingredients[TAB_VALUES.bun]);
+
+  const chosenIngredientsInitialState = {
+    [TAB_VALUES.bun]: [{ ...bun, count: 1 }],
+  };
+
+  const chosenIngredientsReducer = (state, action) => {
+    switch (action.type) {
+      case 'add':
+        return action.data;
+      case 'remove':
+        return action.data;
+      case 'removeAll':
+        return chosenIngredientsInitialState;
+      default: 
+      return chosenIngredientsInitialState;
+    }
+  }
+  const [chosenIngredients, chosenIngredientsDispatcher] = React.useReducer(chosenIngredientsReducer, chosenIngredientsInitialState);
 
   React.useEffect(() => {
     fetch(URL)
@@ -101,12 +102,16 @@ function App() {
       })
       .then(data => filterIngredients(data.data))
       .then(data => {
-        setIngredients(data);
+        ingredientsDispatcher({ type: 'set', data });
         const [bun] = Object.values(data[TAB_VALUES.bun]);
         const newChosenIngredients = {
           [TAB_VALUES.bun]: [{ ...bun, count: 1 }],
         }
-        setChosenIngredients(newChosenIngredients);
+
+        chosenIngredientsDispatcher({
+          type: 'add',
+          data: newChosenIngredients,
+        });
       })
       .catch(console.error);
   }, [])
@@ -114,16 +119,24 @@ function App() {
   return (
     <div className={styles.app}>
       <AppHeader />
-      <main className={styles.main}>
-        <BurgerIngredients ingredients={ingredients} chosenIngredients={chosenIngredients} addIngredient={addIngredient} openModal={openModal}/>
-        <BurgerConstructor chosenIngredients={chosenIngredients} removeIngredient={removeIngredient} removeAllIngredients={removeAllIngredients} openModal={openModal}/>
-      </main>
-        { isVisibleModal && 
-          <Modal modalInfo={modalInfo} closeModal={closeModal}>
-              { modalInfo?.ingredient && <IngredientDetails modalInfo={ modalInfo } /> }
-              { modalInfo?.order && <OrderDetails modalInfo={ modalInfo } />}
-          </Modal>
-        }
+      <IsVisibleModalContext.Provider value={{ isVisibleModal, isVisibleModalDispatcher }}>
+        <ModalInfoContext.Provider value={{ modalInfo, modalInfoDispatcher }}>
+          <IngredientsContext.Provider value={{ ingredients }}>
+            <ChosenIngredientsContext.Provider value={{ chosenIngredients, chosenIngredientsDispatcher }}>
+              <main className={styles.main}>
+                <BurgerIngredients />
+                <BurgerConstructor />
+              </main>
+                { isVisibleModal.isVisible && 
+                  <Modal >
+                      { modalInfo?.ingredient && <IngredientDetails /> }
+                      { modalInfo?.order && <OrderDetails />}
+                  </Modal>
+                }
+            </ChosenIngredientsContext.Provider>
+          </IngredientsContext.Provider>
+        </ModalInfoContext.Provider>
+      </IsVisibleModalContext.Provider>
     </div>
   );
 }

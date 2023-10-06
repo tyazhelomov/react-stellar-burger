@@ -1,9 +1,46 @@
+import React from 'react';
 import { Counter, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import styles from './ingredient.module.css';
 import { TAB_VALUES } from '../app/app';
-import { funcPropType, ingredientPropType, ingredientsObjectPropType } from '../../utils/prop-types';
+import { ingredientPropType } from '../../utils/prop-types';
+import { IsVisibleModalContext, ModalInfoContext, ChosenIngredientsContext } from '../../services/appContext';
 
-function Ingredient({ element, chosenIngredients, addIngredient, openModal }) {
+function Ingredient({ element }) {
+  const { isVisibleModalDispatcher } = React.useContext(IsVisibleModalContext);
+  const { modalInfoDispatcher } = React.useContext(ModalInfoContext);
+  const { chosenIngredients, chosenIngredientsDispatcher } = React.useContext(ChosenIngredientsContext);
+
+  const addIngredient = (e, element) => {
+    e.preventDefault();
+    const type = element.type === TAB_VALUES.bun ? element.type : TAB_VALUES.other;
+    const id = element._id;
+    let newChosenIngredients = { ...chosenIngredients };
+
+    if (!newChosenIngredients[type]) {
+      newChosenIngredients[type] = [];  
+      newChosenIngredients[type].push({ ...element, count: 1 });
+    } else {
+      if (newChosenIngredients[type]) {
+        const el = newChosenIngredients[type].find((item) => item._id === id)
+
+        if (el && type !== TAB_VALUES.bun) {
+          el.count++;
+        } else {
+          if (type !== TAB_VALUES.bun) {
+            newChosenIngredients[type].push({ ...element, count: 1 });
+          } else {
+            newChosenIngredients[type] = [{ ...element, count: 1 }];  
+          }
+        }
+      }
+    }
+
+    chosenIngredientsDispatcher({
+      type: 'add',
+      data: newChosenIngredients,
+    });
+  }
+
   const isAdded = () => {
     const type = element.type === TAB_VALUES.bun ? TAB_VALUES.bun : TAB_VALUES.other;
     const item = (chosenIngredients[type] || []).find((el) => el._id === element._id);
@@ -18,7 +55,8 @@ function Ingredient({ element, chosenIngredients, addIngredient, openModal }) {
       element,
     }
 
-    openModal(info);
+    modalInfoDispatcher({ type: 'add', data: info });
+    isVisibleModalDispatcher({ type: 'open' });
   }
 
   return (
@@ -41,8 +79,5 @@ function Ingredient({ element, chosenIngredients, addIngredient, openModal }) {
 export default Ingredient;
 
 Ingredient.propTypes = {
-  chosenIngredients: ingredientsObjectPropType,
   element: ingredientPropType,
-  addIngredient: funcPropType,
-  openModal: funcPropType,
 }; 

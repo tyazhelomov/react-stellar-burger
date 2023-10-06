@@ -1,9 +1,34 @@
+import React from 'react';
 import { Button, ConstructorElement, CurrencyIcon, DragIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import styles from './burger-constructor.module.css';
 import { TAB_VALUES } from '../app/app';
-import { funcPropType, ingredientsObjectPropType } from "../../utils/prop-types";
+import { IsVisibleModalContext, ModalInfoContext, ChosenIngredientsContext } from '../../services/appContext';
 
-function BurgerConstructor({ chosenIngredients, removeIngredient, removeAllIngredients, openModal }) {
+const URL = 'https://norma.nomoreparties.space/api/orders';
+
+function BurgerConstructor() {
+  const { isVisibleModalDispatcher } = React.useContext(IsVisibleModalContext);
+  const { modalInfoDispatcher } = React.useContext(ModalInfoContext);
+  const { chosenIngredients, chosenIngredientsDispatcher } = React.useContext(ChosenIngredientsContext);
+
+  const removeIngredient = (ingredient) => {
+    const id = ingredient._id;
+    const addedIngredients = { ...chosenIngredients };
+    const index = addedIngredients[TAB_VALUES.other].findIndex((item) => item._id === id);
+    addedIngredients[TAB_VALUES.other].splice(index, 1);
+
+    chosenIngredientsDispatcher({
+      type: 'remove',
+      data: addedIngredients,
+    });
+  }
+
+  const removeAllIngredients = () => {
+    chosenIngredientsDispatcher({
+      type: 'removeAll',
+    });
+  }
+
   const getElements = () => {
     const elements = [];
     const [bun] = chosenIngredients[TAB_VALUES.bun];
@@ -58,12 +83,39 @@ function BurgerConstructor({ chosenIngredients, removeIngredient, removeAllIngre
   }
 
   const addInfoAndOpenModal = () => {
-    const info = {
-      order: true,
+    const ids = [];
+    for (const type in chosenIngredients) {
+      chosenIngredients[type].forEach(el => {
+        ids.push(el._id);
+      })
     }
 
-    openModal(info);
-    removeAllIngredients();
+    fetch(URL, {
+      body: JSON.stringify({ ingredients: ids }),
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+
+      return Promise.reject(`Ошибка ${JSON.stringify(res)}`);
+    })
+    .then(data => {
+      const info = {
+        order: true,
+        orderNumber: data.order.number,
+      }
+
+      modalInfoDispatcher({ type: 'add', data: info });
+      isVisibleModalDispatcher({ type: 'open' });
+      removeAllIngredients();
+    })
+    .catch(console.error);
+
   }
 
   return (
@@ -87,10 +139,3 @@ function BurgerConstructor({ chosenIngredients, removeIngredient, removeAllIngre
 }
 
 export default BurgerConstructor;
-
-BurgerConstructor.propTypes = {
-  chosenIngredients: ingredientsObjectPropType,
-  removeIngredient: funcPropType,
-  removeAllIngredients: funcPropType,
-  openModal: funcPropType,
-}; 
