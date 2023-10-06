@@ -1,0 +1,30 @@
+.block {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.img {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  gap: 32px;
+  margin: 0 60px;
+}
+
+.pfc {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.pfc_element {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
