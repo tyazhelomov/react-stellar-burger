@@ -3,7 +3,7 @@ import { Tab } from '@ya.praktikum/react-developer-burger-ui-components';
 import styles from './burger-ingredients.module.css'
 import Ingredient from '../ingredient/ingredient';
 import { TAB_VALUES } from '../app/app';
-import { funcPropType, ingredientsObjectPropType } from '../../utils/prop-types';
+import { IngredientsContext } from '../../services/appContext';
 
 const TAB_NAMES = {
   bun: 'Булки',
@@ -11,8 +11,22 @@ const TAB_NAMES = {
   sauce: 'Соусы',
 }
 
-const BurgerIngredients = ({ ingredients, chosenIngredients, addIngredient, openModal }) => {
-  const [current, setCurrent] = React.useState(TAB_VALUES.bun);
+const BurgerIngredients = () => {
+  const { ingredients } = React.useContext(IngredientsContext);
+  const currentState = { currentTopic: TAB_VALUES.bun };
+
+  const currentReducer = (state, action) => {
+    switch (action.type) {
+      case 'change':
+        return { currentTopic: action.value };
+      default: 
+      return currentState;
+    }
+  }
+  const [current, currentDispatcher] = React.useReducer(currentReducer, currentState);
+  const setCurrent = (value) => {
+    currentDispatcher({ type: 'change', value })
+  }
 
   const renderLoop = () => {
     const render = [];
@@ -26,7 +40,7 @@ const BurgerIngredients = ({ ingredients, chosenIngredients, addIngredient, open
           </div>
           <div className={styles.container}>
             {
-              ingredients[element].map((item, index) => <Ingredient key={item._id} chosenIngredients={chosenIngredients} element={item} addIngredient={addIngredient} openModal={openModal}/>)
+              ingredients[element].map((item) => <Ingredient key={item._id} element={item} />)
             }
           </div>
         </div>
@@ -62,10 +76,3 @@ const BurgerIngredients = ({ ingredients, chosenIngredients, addIngredient, open
 }
 
 export default BurgerIngredients;
-
-BurgerIngredients.propTypes = {
-  ingredients: ingredientsObjectPropType,
-  chosenIngredients: ingredientsObjectPropType,
-  addIngredient: funcPropType,
-  openModal: funcPropType,
-}; 

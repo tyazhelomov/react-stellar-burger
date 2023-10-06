@@ -1,11 +1,15 @@
+import React from 'react';
 import styles from './order-details.module.css';
 import doneImage from '../../images/done.svg';
+import { ModalInfoContext } from '../../services/appContext';
 
 function OrderDetails() {
+  const { modalInfo } = React.useContext(ModalInfoContext);
+
   return (
     <div className={styles.block}>
       <div className={styles.order_number}>
-        <p className="text text_type_digits-large">{Math.floor(Math.random() * 1000000)}</p>
+        <p className="text text_type_digits-large">{ modalInfo.orderNumber }</p>
       </div>
       <p className={`${styles.order_id} text text_type_main-medium`}>
         идентификатор заказа
