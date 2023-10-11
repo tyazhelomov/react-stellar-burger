@@ -1,9 +1,11 @@
 import React from 'react';
 import styles from './ingredient-details.module.css';
-import { ModalInfoContext } from '../../services/appContext';
+import { shallowEqual, useSelector } from 'react-redux';
 
 function IngredientDetails() {
-  const { modalInfo } = React.useContext(ModalInfoContext);
+  const { modalInfo } = useSelector(store => ({
+    modalInfo: store.modalInfo,
+  }), shallowEqual);
 
   return (
     <div className={styles.block}>

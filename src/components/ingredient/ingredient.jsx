@@ -1,51 +1,58 @@
-import React from 'react';
+import { useDrag } from "react-dnd";
 import { Counter, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import styles from './ingredient.module.css';
-import { TAB_VALUES } from '../app/app';
 import { ingredientPropType } from '../../utils/prop-types';
-import { IsVisibleModalContext, ModalInfoContext, ChosenIngredientsContext } from '../../services/appContext';
+import { TAB_VALUES } from '../../utils/constants';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { chosenIngredientsSlice } from '../../services/chosen-ingredients';
+import { modalInfoSlice } from '../../services/modal-info';
+import { modalVisibilitySlice } from '../../services/modal-visibility';
 
 function Ingredient({ element }) {
-  const { isVisibleModalDispatcher } = React.useContext(IsVisibleModalContext);
-  const { modalInfoDispatcher } = React.useContext(ModalInfoContext);
-  const { chosenIngredients, chosenIngredientsDispatcher } = React.useContext(ChosenIngredientsContext);
+  const { chosenIngredients } = useSelector(store => ({
+    chosenIngredients: store.chosenIngredients,
+  }), shallowEqual);
+  const dispatch = useDispatch();
+  const { add } = chosenIngredientsSlice.actions;
+  const { addModalInfo } = modalInfoSlice.actions;
+  const { openModal } = modalVisibilitySlice.actions;
+
+  const [, dragRef] = useDrag({
+    type: "ingredient",
+    item: element,
+  });
 
   const addIngredient = (e, element) => {
     e.preventDefault();
     const type = element.type === TAB_VALUES.bun ? element.type : TAB_VALUES.other;
     const id = element._id;
-    let newChosenIngredients = { ...chosenIngredients };
+    const newChosenIngredients = JSON.parse(JSON.stringify(chosenIngredients));
 
     if (!newChosenIngredients[type]) {
-      newChosenIngredients[type] = [];  
-      newChosenIngredients[type].push({ ...element, count: 1 });
+      newChosenIngredients[type] = [];
+      newChosenIngredients[type].push(element);
     } else {
-      if (newChosenIngredients[type]) {
-        const el = newChosenIngredients[type].find((item) => item._id === id)
+      const el = newChosenIngredients[type].find((item) => item._id === id);
 
-        if (el && type !== TAB_VALUES.bun) {
-          el.count++;
+      if (el && type !== TAB_VALUES.bun) {
+        newChosenIngredients[type].push(element);
+      } else {
+        if (type !== TAB_VALUES.bun) {
+          newChosenIngredients[type].push(element);
         } else {
-          if (type !== TAB_VALUES.bun) {
-            newChosenIngredients[type].push({ ...element, count: 1 });
-          } else {
-            newChosenIngredients[type] = [{ ...element, count: 1 }];  
-          }
+          newChosenIngredients[type] = [element];  
         }
       }
     }
 
-    chosenIngredientsDispatcher({
-      type: 'add',
-      data: newChosenIngredients,
-    });
+    dispatch(add(newChosenIngredients));
   }
 
   const isAdded = () => {
     const type = element.type === TAB_VALUES.bun ? TAB_VALUES.bun : TAB_VALUES.other;
-    const item = (chosenIngredients[type] || []).find((el) => el._id === element._id);
+    const amount = (chosenIngredients[type] || []).reduce((acc, el) => el._id === element._id ? acc + 1 : acc, 0);
 
-    return item?.count;
+    return amount || undefined;
   }
 
   const addInfoAndOpenModal = (element) => {
@@ -55,12 +62,12 @@ function Ingredient({ element }) {
       element,
     }
 
-    modalInfoDispatcher({ type: 'add', data: info });
-    isVisibleModalDispatcher({ type: 'open' });
+    dispatch(addModalInfo(info));
+    dispatch(openModal());
   }
 
   return (
-    <div className={styles.item} onClick={(e) => addIngredient(e, element)}>
+    <div className={styles.item} onClick={(e) => addIngredient(e, element)} ref={dragRef}>
       <div>
         { isAdded() && <Counter count={isAdded()} size="small"/>}
       </div>

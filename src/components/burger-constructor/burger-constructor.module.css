@@ -31,14 +31,6 @@
 	border-radius: 6px;
 }
 
-.element {
-  display: flex;
-  margin-right: 4px;
-  margin-left: 10px;
-  align-items: center;
-  justify-content: space-between;
-}
-
 .locked {
   margin-right: 16px;
   margin-left: auto;

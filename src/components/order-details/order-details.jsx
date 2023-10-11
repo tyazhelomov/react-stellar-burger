@@ -1,10 +1,12 @@
 import React from 'react';
 import styles from './order-details.module.css';
 import doneImage from '../../images/done.svg';
-import { ModalInfoContext } from '../../services/appContext';
+import { shallowEqual, useSelector } from 'react-redux';
 
 function OrderDetails() {
-  const { modalInfo } = React.useContext(ModalInfoContext);
+  const { modalInfo } = useSelector(store => ({
+    modalInfo: store.modalInfo,
+  }), shallowEqual);
 
   return (
     <div className={styles.block}>
