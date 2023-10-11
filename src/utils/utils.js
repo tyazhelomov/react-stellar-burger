@@ -22,13 +22,7 @@ export function getIngredients() {
     const { set } = ingredientsSlice.actions;
     const { add } = chosenIngredientsSlice.actions;
     fetch(`${ BASE_URL }${ ENDPOINTS.GET_INGREDIENTS }`)
-      .then(res => {
-        if (res.ok) {
-            return res.json();
-        }
-
-        return Promise.reject(`Ошибка ${JSON.stringify(res)}`);
-      })
+      .then(checkResponse)
       .then(data => filterIngredients(data.data))
       .then(data => {
         dispatch(set(data));
@@ -45,4 +39,8 @@ export function getIngredients() {
         dispatch(set(initData));
       });
   };
+}
+
+export function checkResponse(res) {
+  return res.ok ? res.json() : res.json().then(err => Promise.reject(`Ошибка ${JSON.stringify(err)}`));
 }

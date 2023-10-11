@@ -8,6 +8,7 @@ import { chosenIngredientsSlice } from '../../services/chosen-ingredients';
 import { modalInfoSlice } from '../../services/modal-info';
 import { modalVisibilitySlice } from '../../services/modal-visibility';
 import ChosenIngredient from '../chosen-ingredients/chosen-ingredients';
+import { checkResponse } from '../../utils/utils';
 
 function BurgerConstructor() {
   const { chosenIngredients } = useSelector(store => ({
@@ -107,13 +108,7 @@ function BurgerConstructor() {
         "Content-Type": "application/json",
       },
     })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-
-      return Promise.reject(`Ошибка ${JSON.stringify(res)}`);
-    })
+    .then(checkResponse)
     .then(data => {
       const info = {
         order: true,
