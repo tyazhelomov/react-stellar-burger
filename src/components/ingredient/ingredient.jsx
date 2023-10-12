@@ -25,24 +25,15 @@ function Ingredient({ element }) {
   const addIngredient = (e, element) => {
     e.preventDefault();
     const type = element.type === TAB_VALUES.bun ? element.type : TAB_VALUES.other;
-    const id = element._id;
     const newChosenIngredients = JSON.parse(JSON.stringify(chosenIngredients));
 
     if (!newChosenIngredients[type]) {
       newChosenIngredients[type] = [];
       newChosenIngredients[type].push(element);
-    } else {
-      const el = newChosenIngredients[type].find((item) => item._id === id);
-
-      if (el && type !== TAB_VALUES.bun) {
+    } else if (type !== TAB_VALUES.bun) {
         newChosenIngredients[type].push(element);
-      } else {
-        if (type !== TAB_VALUES.bun) {
-          newChosenIngredients[type].push(element);
-        } else {
-          newChosenIngredients[type] = [element];  
-        }
-      }
+    } else {
+      newChosenIngredients[type] = [element];  
     }
 
     dispatch(add(newChosenIngredients));

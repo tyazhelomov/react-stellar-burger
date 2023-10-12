@@ -6,6 +6,7 @@ import ModalOverlay from "../modal-overlay/modal-overlay";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { modalInfoSlice } from "../../services/modal-info";
 import { modalVisibilitySlice } from "../../services/modal-visibility";
+import PropTypes from "prop-types";
 const modalRoot = document.getElementById("modal");
 
 function Modal({ children }) {
@@ -54,3 +55,7 @@ function Modal({ children }) {
 }
 
 export default Modal;
+
+Modal.propTypes = {
+  children: PropTypes.array,
+}; 

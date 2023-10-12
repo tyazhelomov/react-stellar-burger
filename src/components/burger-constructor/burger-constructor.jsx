@@ -1,50 +1,40 @@
-import React from 'react';
 import { useDrop } from "react-dnd";
+import { v4 as uuidv4 } from 'uuid';
 import { Button, ConstructorElement, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import styles from './burger-constructor.module.css';
-import { BASE_URL, ENDPOINTS, TAB_VALUES } from '../../utils/constants';
+import { TAB_VALUES } from '../../utils/constants';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { chosenIngredientsSlice } from '../../services/chosen-ingredients';
-import { modalInfoSlice } from '../../services/modal-info';
-import { modalVisibilitySlice } from '../../services/modal-visibility';
 import ChosenIngredient from '../chosen-ingredients/chosen-ingredients';
-import { checkResponse } from '../../utils/utils';
+import { setOrder } from '../../services/actions/set-order';
 
 function BurgerConstructor() {
   const { chosenIngredients } = useSelector(store => ({
     chosenIngredients: store.chosenIngredients,
   }), shallowEqual);
   const dispatch = useDispatch();
-  const { add, removeAll } = chosenIngredientsSlice.actions;
-  const { addModalInfo } = modalInfoSlice.actions;
-  const { openModal } = modalVisibilitySlice.actions;
+  const { add } = chosenIngredientsSlice.actions;
   const [, dropTarget] = useDrop({
     accept: "ingredient",
     drop(data) {
+      data = JSON.parse(JSON.stringify(data));
+      data.uuid = uuidv4();
+
       addIngredient(data);
     },
   });
 
   const addIngredient = (element) => {
     const type = element.type === TAB_VALUES.bun ? element.type : TAB_VALUES.other;
-    const id = element._id;
     const newChosenIngredients = JSON.parse(JSON.stringify(chosenIngredients));
 
     if (!newChosenIngredients[type]) {
       newChosenIngredients[type] = [];
       newChosenIngredients[type].push(element);
-    } else {
-      const el = newChosenIngredients[type].find((item) => item._id === id);
-
-      if (el && type !== TAB_VALUES.bun) {
+    } else if (type !== TAB_VALUES.bun) {
         newChosenIngredients[type].push(element);
-      } else {
-        if (type !== TAB_VALUES.bun) {
-          newChosenIngredients[type].push(element);
-        } else {
-          newChosenIngredients[type] = [element];  
-        }
-      }
+    } else {
+      newChosenIngredients[type] = [element];  
     }
 
     dispatch(add(newChosenIngredients));
@@ -67,7 +57,7 @@ function BurgerConstructor() {
     )
     elements.push(
       <div className={styles.burger} key={'ingredients'}>
-        { other.map((element, index) => <ChosenIngredient element={element} index={index} key={`${ element._id }${ index }`} />) }
+        { other.map((element, index) => <ChosenIngredient element={element} index={index} key={element.uuid} />) }
       </div>
     )
     elements.push(
@@ -86,8 +76,8 @@ function BurgerConstructor() {
   }
 
   const getSum = () => {
-    const [bun] = chosenIngredients[TAB_VALUES.bun];
-    const sumBuns = bun.price * 2;
+    const [bun] = chosenIngredients[TAB_VALUES.bun] || [];
+    const sumBuns = bun?.price * 2 || 0;
     const sumIngredients = (chosenIngredients[TAB_VALUES.other] || []).reduce((acc, ingredient) => acc + ingredient.price, 0);
 
     return sumBuns + sumIngredients;
@@ -101,32 +91,18 @@ function BurgerConstructor() {
       })
     }
 
-    fetch(`${ BASE_URL }${ ENDPOINTS.SET_ORDER }`, {
-      body: JSON.stringify({ ingredients: ids }),
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-    .then(checkResponse)
-    .then(data => {
-      const info = {
-        order: true,
-        orderNumber: data.order.number,
-      };
-
-      dispatch(addModalInfo(info));
-      dispatch(openModal());
-      dispatch(removeAll());
-    })
-    .catch(console.error);
-
+    dispatch(setOrder(ids));
   }
 
   return (
     <section className={styles.section}>
       <div className={styles.order} ref={dropTarget}>
-        { getElements() }
+        { chosenIngredients[TAB_VALUES.bun] && getElements() } 
+        { !chosenIngredients[TAB_VALUES.bun] && 
+          <h1 className="text text_type_main-medium">
+            Пожалуйста, выберете или перетащите булку
+          </h1> 
+        }
       </div>
       <div className={styles.count}>
         <div className={styles.sum}>
@@ -135,9 +111,12 @@ function BurgerConstructor() {
           </p>
           <CurrencyIcon type="primary" />
         </div>
-        <Button htmlType="button" type="primary" size="large" onClick={addInfoAndOpenModal}>
-          Оформить заказ
-        </Button>
+        { 
+          chosenIngredients[TAB_VALUES.bun] && 
+          <Button htmlType="button" type="primary" size="large" onClick={addInfoAndOpenModal}>
+            Оформить заказ
+          </Button>
+        }
       </div>
     </section>
   )

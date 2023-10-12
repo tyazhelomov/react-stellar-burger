@@ -1,7 +1,4 @@
-import { chosenIngredientsSlice } from "../services/chosen-ingredients";
-import { ingredientsSlice } from "../services/ingredients";
-import { BASE_URL, ENDPOINTS, TAB_VALUES } from "./constants";
-import { data } from "./data";
+import { BASE_URL, TAB_VALUES } from "./constants";
 
 export const filterIngredients = (data) => {
   const ingredients = {
@@ -17,28 +14,12 @@ export const filterIngredients = (data) => {
   return ingredients;
 }
 
-export function getIngredients() {
-  return function(dispatch) {
-    const { set } = ingredientsSlice.actions;
-    const { add } = chosenIngredientsSlice.actions;
-    fetch(`${ BASE_URL }${ ENDPOINTS.GET_INGREDIENTS }`)
-      .then(checkResponse)
-      .then(data => filterIngredients(data.data))
-      .then(data => {
-        dispatch(set(data));
-        const [bun] = Object.values(data[TAB_VALUES.bun]);
-        const newChosenIngredients = {
-          [TAB_VALUES.bun]: [{ ...bun, count: 1 }],
-        }
-        dispatch(add(newChosenIngredients));
-      })
-      .catch((err) => {
-        console.error(err);
-
-        const initData = filterIngredients(data);
-        dispatch(set(initData));
-      });
-  };
+export function fetchRequest(endpoint, options) {
+  return fetch(`${ BASE_URL }${ endpoint }`, options)
+    .then(checkResponse)
+    .then(res => new Promise((resolve) => {
+      setTimeout(() => resolve(res), 2000);
+    }));
 }
 
 export function checkResponse(res) {

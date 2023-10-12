@@ -1,9 +1,11 @@
 import { ConstructorElement, DragIcon } from '@ya.praktikum/react-developer-burger-ui-components';
+import PropTypes from "prop-types";
 import styles from './chosen-ingredients.module.css';
 import { chosenIngredientsSlice } from '../../services/chosen-ingredients';
 import { TAB_VALUES } from '../../utils/constants';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useDrag, useDrop } from 'react-dnd';
+import { ingredientPropType } from '../../utils/prop-types';
 
 function ChosenIngredient({ element, index }) {
   const { chosenIngredients } = useSelector(store => ({
@@ -61,3 +63,8 @@ function ChosenIngredient({ element, index }) {
 }
 
 export default ChosenIngredient;
+
+ChosenIngredient.propTypes = {
+  element: ingredientPropType,
+  index: PropTypes.number,
+}; 

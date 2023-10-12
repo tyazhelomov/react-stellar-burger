@@ -9,7 +9,7 @@ import Modal from "../modal/modal";
 import IngredientDetails from "../ingredient-details/ingredient-details";
 import OrderDetails from "../order-details/order-details";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { getIngredients } from "../../utils/utils";
+import { getIngredients } from "../../services/actions/get-ingredients";
 
 function App() {
   const { modalInfo, modalVisibility } = useSelector(store => ({
@@ -19,7 +19,7 @@ function App() {
   }), shallowEqual);
 
   const dispatch = useDispatch();
-      
+
   React.useEffect(() => {
     dispatch(getIngredients());
   }, [dispatch]);
