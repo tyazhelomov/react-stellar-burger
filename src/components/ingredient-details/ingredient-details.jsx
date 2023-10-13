@@ -1,7 +1,12 @@
-import { modalInfoPropType } from '../../utils/prop-types';
+import React from 'react';
 import styles from './ingredient-details.module.css';
+import { shallowEqual, useSelector } from 'react-redux';
 
-function IngredientDetails({ modalInfo }) {
+function IngredientDetails() {
+  const { modalInfo } = useSelector(store => ({
+    modalInfo: store.modalInfo,
+  }), shallowEqual);
+
   return (
     <div className={styles.block}>
       <img src={modalInfo.element.image_large} className={styles.img} alt={modalInfo.element.name}></img>
@@ -49,7 +54,3 @@ function IngredientDetails({ modalInfo }) {
 }
 
 export default IngredientDetails;
-
-IngredientDetails.propTypes = {
-  modalInfo: modalInfoPropType,
-}; 

@@ -8,7 +8,8 @@
   justify-content: center;
   text-align: center;
   position: relative;
-  cursor: pointer;
+  cursor: grab;
+  transform: translate(0, 0);
 }
 
 .image {

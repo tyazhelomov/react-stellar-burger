@@ -1,9 +1,49 @@
-import { Button, ConstructorElement, CurrencyIcon, DragIcon } from '@ya.praktikum/react-developer-burger-ui-components';
+import { useDrop } from "react-dnd";
+import { v4 as uuidv4 } from 'uuid';
+import { Button, ConstructorElement, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import styles from './burger-constructor.module.css';
-import { TAB_VALUES } from '../app/app';
-import { funcPropType, ingredientsObjectPropType } from "../../utils/prop-types";
+import { TAB_VALUES } from '../../utils/constants';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { chosenIngredientsSlice } from '../../services/chosen-ingredients';
+import ChosenIngredient from '../chosen-ingredients/chosen-ingredients';
+import { setOrder } from '../../services/actions/set-order';
 
-function BurgerConstructor({ chosenIngredients, removeIngredient, removeAllIngredients, openModal }) {
+function BurgerConstructor() {
+  const { chosenIngredients } = useSelector(store => ({
+    chosenIngredients: store.chosenIngredients,
+  }), shallowEqual);
+  const dispatch = useDispatch();
+  const { add } = chosenIngredientsSlice.actions;
+  const [, dropTarget] = useDrop({
+    accept: "ingredient",
+    drop(data) {
+      data = JSON.parse(JSON.stringify(data));
+      data.uuid = uuidv4();
+
+      addIngredient(data);
+    },
+  });
+
+  const addIngredient = (element) => {
+    const type = element.type === TAB_VALUES.bun ? element.type : TAB_VALUES.other;
+    const newChosenIngredients = JSON.parse(JSON.stringify(chosenIngredients));
+
+    if (!newChosenIngredients[TAB_VALUES.bun] && element.type !== TAB_VALUES.bun) {
+      return;
+    }
+
+    if (!newChosenIngredients[type]) {
+      newChosenIngredients[type] = [];
+      newChosenIngredients[type].push(element);
+    } else if (type !== TAB_VALUES.bun) {
+        newChosenIngredients[type].push(element);
+    } else {
+      newChosenIngredients[type] = [element];  
+    }
+
+    dispatch(add(newChosenIngredients));
+  }
+
   const getElements = () => {
     const elements = [];
     const [bun] = chosenIngredients[TAB_VALUES.bun];
@@ -21,17 +61,7 @@ function BurgerConstructor({ chosenIngredients, removeIngredient, removeAllIngre
     )
     elements.push(
       <div className={styles.burger} key={'ingredients'}>
-        { other.map((element) => 
-          <div className={styles.element} key={element._id}>
-            <DragIcon type="primary" />
-            <ConstructorElement
-              text={element.name}
-              price={element.price * element.count}
-              thumbnail={element.image}
-              handleClose={() => removeIngredient(element)}
-            />
-          </div>
-        ) }
+        { other.map((element, index) => <ChosenIngredient element={element} index={index} key={element.uuid} />) }
       </div>
     )
     elements.push(
@@ -50,26 +80,33 @@ function BurgerConstructor({ chosenIngredients, removeIngredient, removeAllIngre
   }
 
   const getSum = () => {
-    const [bun] = chosenIngredients[TAB_VALUES.bun];
-    const sumBuns = bun.price * 2;
-    const sumIngredients = (chosenIngredients[TAB_VALUES.other] || []).reduce((acc, ingredient) => acc + ingredient.price * ingredient.count, 0);
+    const [bun] = chosenIngredients[TAB_VALUES.bun] || [];
+    const sumBuns = bun?.price * 2 || 0;
+    const sumIngredients = (chosenIngredients[TAB_VALUES.other] || []).reduce((acc, ingredient) => acc + ingredient.price, 0);
 
     return sumBuns + sumIngredients;
   }
 
   const addInfoAndOpenModal = () => {
-    const info = {
-      order: true,
+    const ids = [];
+    for (const type in chosenIngredients) {
+      chosenIngredients[type].forEach(el => {
+        ids.push(el._id);
+      })
     }
 
-    openModal(info);
-    removeAllIngredients();
+    dispatch(setOrder(ids));
   }
 
   return (
     <section className={styles.section}>
-      <div className={styles.order}>
-        { getElements() }
+      <div className={styles.order} ref={dropTarget}>
+        { chosenIngredients[TAB_VALUES.bun] && getElements() } 
+        { !chosenIngredients[TAB_VALUES.bun] && 
+          <h1 className="text text_type_main-medium">
+            Перетащите булку для начала заказа
+          </h1> 
+        }
       </div>
       <div className={styles.count}>
         <div className={styles.sum}>
@@ -78,19 +115,15 @@ function BurgerConstructor({ chosenIngredients, removeIngredient, removeAllIngre
           </p>
           <CurrencyIcon type="primary" />
         </div>
-        <Button htmlType="button" type="primary" size="large" onClick={addInfoAndOpenModal}>
-          Оформить заказ
-        </Button>
+        { 
+          chosenIngredients[TAB_VALUES.bun] && 
+          <Button htmlType="button" type="primary" size="large" onClick={addInfoAndOpenModal}>
+            Оформить заказ
+          </Button>
+        }
       </div>
     </section>
   )
 }
 
 export default BurgerConstructor;
-
-BurgerConstructor.propTypes = {
-  chosenIngredients: ingredientsObjectPropType,
-  removeIngredient: funcPropType,
-  removeAllIngredients: funcPropType,
-  openModal: funcPropType,
-}; 
