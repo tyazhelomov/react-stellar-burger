@@ -44,7 +44,7 @@ function Modal({ children }) {
             <p className="text text_type_main-large">
               { modalInfo?.header }
             </p>
-            <CloseIcon type="primary" onClick={closeModalFunc}/>
+            <CloseIcon type="primary" onClick={closeModalFunc} />
           </div>
           { children }
         </div>

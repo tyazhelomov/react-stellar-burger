@@ -28,6 +28,10 @@ function BurgerConstructor() {
     const type = element.type === TAB_VALUES.bun ? element.type : TAB_VALUES.other;
     const newChosenIngredients = JSON.parse(JSON.stringify(chosenIngredients));
 
+    if (!newChosenIngredients[TAB_VALUES.bun] && element.type !== TAB_VALUES.bun) {
+      return;
+    }
+
     if (!newChosenIngredients[type]) {
       newChosenIngredients[type] = [];
       newChosenIngredients[type].push(element);
@@ -100,7 +104,7 @@ function BurgerConstructor() {
         { chosenIngredients[TAB_VALUES.bun] && getElements() } 
         { !chosenIngredients[TAB_VALUES.bun] && 
           <h1 className="text text_type_main-medium">
-            Пожалуйста, выберете или перетащите булку
+            Перетащите булку для начала заказа
           </h1> 
         }
       </div>
