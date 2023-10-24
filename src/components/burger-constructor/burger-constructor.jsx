@@ -7,12 +7,14 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { chosenIngredientsSlice } from '../../services/chosen-ingredients';
 import ChosenIngredient from '../chosen-ingredients/chosen-ingredients';
 import { setOrder } from '../../services/actions/set-order';
+import { useNavigate } from "react-router-dom";
 
 function BurgerConstructor() {
   const { chosenIngredients } = useSelector(store => ({
     chosenIngredients: store.chosenIngredients,
   }), shallowEqual);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { add } = chosenIngredientsSlice.actions;
   const [, dropTarget] = useDrop({
     accept: "ingredient",
@@ -88,6 +90,14 @@ function BurgerConstructor() {
   }
 
   const addInfoAndOpenModal = () => {
+    const token = localStorage.getItem('accessToken');
+
+    if (!token) {
+      navigate('/login');
+
+      return;
+    }
+
     const ids = [];
     for (const type in chosenIngredients) {
       chosenIngredients[type].forEach(el => {

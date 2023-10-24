@@ -1,5 +1,5 @@
 import { ENDPOINTS } from "../../utils/constants";
-import { fetchRequest } from "../../utils/utils";
+import { fetchWithRefresh } from "../../utils/utils";
 import { chosenIngredientsSlice } from "../chosen-ingredients";
 import { modalInfoSlice } from "../modal-info";
 import { modalVisibilitySlice } from "../modal-visibility";
@@ -18,11 +18,12 @@ export function setOrder(ids) {
     dispatch(openModal());
     dispatch(addModalInfo(info));
 
-    fetchRequest(ENDPOINTS.SET_ORDER, {
+    fetchWithRefresh(ENDPOINTS.SET_ORDER, {
       body: JSON.stringify({ ingredients: ids }),
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        authorization: `Bearer ${localStorage.getItem('accessToken')}`,
       },
     })
     .then(data => {

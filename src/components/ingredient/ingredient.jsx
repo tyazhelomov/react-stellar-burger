@@ -6,12 +6,15 @@ import { TAB_VALUES } from '../../utils/constants';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { modalInfoSlice } from '../../services/modal-info';
 import { modalVisibilitySlice } from '../../services/modal-visibility';
+import { useLocation, useNavigate } from "react-router-dom";
 
 function Ingredient({ element }) {
   const { chosenIngredients } = useSelector(store => ({
     chosenIngredients: store.chosenIngredients,
   }), shallowEqual);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { addModalInfo } = modalInfoSlice.actions;
   const { openModal } = modalVisibilitySlice.actions;
 
@@ -36,6 +39,9 @@ function Ingredient({ element }) {
 
     dispatch(addModalInfo(info));
     dispatch(openModal());
+
+    navigate(`/ingredients/${element._id}`, { state: { background: location }})
+    localStorage.setItem('modal-info', JSON.stringify(info))
   }
 
   return (

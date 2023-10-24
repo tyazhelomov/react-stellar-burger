@@ -1,18 +1,16 @@
 import React from 'react';
 import styles from './ingredient-details.module.css';
-import { shallowEqual, useSelector } from 'react-redux';
 
 function IngredientDetails() {
-  const { modalInfo } = useSelector(store => ({
-    modalInfo: store.modalInfo,
-  }), shallowEqual);
+  console.log('IngredientDetails')
+  const modalInfoLocalStorage = JSON.parse(localStorage.getItem('modal-info'));
 
   return (
     <div className={styles.block}>
-      <img src={modalInfo.element.image_large} className={styles.img} alt={modalInfo.element.name}></img>
+      <img src={modalInfoLocalStorage.element.image_large} className={styles.img} alt={modalInfoLocalStorage.element.name}></img>
       <div className={styles.info}>
         <p className="text text_type_main-medium">
-          {modalInfo.element.name}
+          {modalInfoLocalStorage.element.name}
         </p>
         <div className={styles.pfc}>
           <div className={styles.pfc_element}>
@@ -20,7 +18,7 @@ function IngredientDetails() {
               Калории,ккал
             </p>
             <p className="text text_type_digits-default text_color_inactive">
-              {modalInfo.element.calories}
+              {modalInfoLocalStorage.element.calories}
             </p>
           </div>
           <div className={styles.pfc_element}>
@@ -28,7 +26,7 @@ function IngredientDetails() {
               Белки, г
             </p>
             <p className="text text_type_digits-default text_color_inactive">
-              {modalInfo.element.proteins}
+              {modalInfoLocalStorage.element.proteins}
             </p>
           </div>
           <div className={styles.pfc_element}>
@@ -36,7 +34,7 @@ function IngredientDetails() {
               Жиры, г
             </p>
             <p className="text text_type_digits-default text_color_inactive">
-              {modalInfo.element.fat}
+              {modalInfoLocalStorage.element.fat}
             </p>
           </div>
           <div className={styles.pfc_element}>
@@ -44,7 +42,7 @@ function IngredientDetails() {
               Углеводы, г
             </p>
             <p className="text text_type_digits-default text_color_inactive">
-              {modalInfo.element.carbohydrates}
+              {modalInfoLocalStorage.element.carbohydrates}
             </p>
           </div>
         </div>

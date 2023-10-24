@@ -7,20 +7,26 @@ import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { modalInfoSlice } from "../../services/modal-info";
 import { modalVisibilitySlice } from "../../services/modal-visibility";
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 const modalRoot = document.getElementById("modal");
 
-function Modal({ children }) {
-  const { modalInfo } = useSelector(store => ({
-    modalInfo: store.modalInfo,
-  }), shallowEqual);
+function Modal({ children, element }) {
+  console.log(children, element)
+  const modalInfoLocalStorage = JSON.parse(localStorage.getItem('modal-info'));
   const dispatch = useDispatch();
   const { removeModalInfo } = modalInfoSlice.actions;
   const { closeModal } = modalVisibilitySlice.actions;
+  const navigate = useNavigate();
 
   const closeModalFunc = React.useCallback(() => {
     dispatch(removeModalInfo());
     dispatch(closeModal());
-  }, [closeModal, dispatch, removeModalInfo]);
+
+    if (modalInfoLocalStorage) {
+      localStorage.removeItem('modal-info');
+      navigate(-1)
+    }
+  }, [closeModal, dispatch, modalInfoLocalStorage, navigate, removeModalInfo]);
 
   React.useEffect(() => {
     const closeByKey = (e) => {
@@ -42,7 +48,7 @@ function Modal({ children }) {
         <div className={styles.modal} onClick={(e) => e.stopPropagation()}> 
           <div className={styles.header}>
             <p className="text text_type_main-large">
-              { modalInfo?.header }
+              { modalInfoLocalStorage?.header }
             </p>
             <CloseIcon type="primary" onClick={closeModalFunc} />
           </div>
