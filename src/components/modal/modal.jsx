@@ -62,5 +62,5 @@ function Modal({ children }) {
 export default Modal;
 
 Modal.propTypes = {
-  children: PropTypes.array,
+  children: PropTypes.object,
 }; 

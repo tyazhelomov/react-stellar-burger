@@ -7,7 +7,7 @@ import { Provider } from "react-redux";
 import thunk from "redux-thunk";
 import { configureStore } from "@reduxjs/toolkit";
 import { rootReducer } from "./services";
-import { BrowserRouter as Router } from "react-router-dom";
+import { HashRouter as Router } from "react-router-dom";
 
 const store = configureStore({
   reducer: rootReducer,
