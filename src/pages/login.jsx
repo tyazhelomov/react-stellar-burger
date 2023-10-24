@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import styles from './form.module.css'
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Button, Input, PasswordInput } from "@ya.praktikum/react-developer-burger-ui-components";
@@ -6,13 +6,14 @@ import { Link, Navigate } from "react-router-dom";
 import { auth } from "../services/actions/auth";
 import { ENDPOINTS } from "../utils/constants";
 import { errorStateSlice } from "../services/error-state";
+import { useForm } from "../utils/utils";
 
 function LoginPage() {
   const dispatch = useDispatch();
-  const [form, setValue] = useState({ email: '', password: '' });
+  const { values, handleChange } = useForm({ email: '', password: '' });
   const { refreshForm } = errorStateSlice.actions;
 
-  if (!form.email) {
+  if (!values.email) {
     dispatch(refreshForm());
   }
 
@@ -24,13 +25,13 @@ function LoginPage() {
           ENDPOINTS.LOGIN,
           'POST',
           {
-            "email": form.email, 
-            "password": form.password,
+            "email": values.email, 
+            "password": values.password,
           }
         )
       )
     },
-    [dispatch, form]
+    [dispatch, values]
   );
 
   const { userState, errorState } = useSelector(store => ({
@@ -55,13 +56,9 @@ function LoginPage() {
     );
   }
 
-  const onChange = e => {
-    setValue({ ...form, [e.target.name]: e.target.value });
-  };
-
   return (
     <div className={styles.main}>
-      <form className={styles.form}>
+      <form className={styles.form} onSubmit={loginUser}>
         { userState.isLoading ? 
           <>
             <h1 className='text text_type_main-medium'>
@@ -77,30 +74,29 @@ function LoginPage() {
             <Input
               type={'email'}
               placeholder={'E-mail'}
-              onChange={onChange}
+              onChange={handleChange}
               icon={'CurrencyIcon'}
-              value={form.email}
+              value={values.email}
               name={'email'}
               error={false}
               errorText={'Ошибка'}
               size={'default'}
             />
             <PasswordInput
-              onChange={onChange}
-              value={form.password}
+              onChange={handleChange}
+              value={values.password}
               name={'password'}
               extraClass="mb-2"
             />
-            <div className={ styles.button }>
+            <button className={ styles.button }>
               <Button
                 htmlType="button"
                 type="primary"
                 size="large"
-                onClick={ loginUser }
               >
                 Войти
               </Button>
-            </div>
+            </button>
           </div>
         }
         { errorState.error && 

@@ -86,7 +86,7 @@ function IngredientPage() {
         <p className={`${ styles.error } text text_type_main-medium`}>
           { errorState.errorMsg }
         </p>
-        <div className={styles.button}>
+        <button className={styles.button}>
           <Button
             htmlType="button"
             type="primary"
@@ -95,7 +95,7 @@ function IngredientPage() {
           >
             На главную
           </Button>
-        </div>
+        </button>
       </>
     }
     </div>

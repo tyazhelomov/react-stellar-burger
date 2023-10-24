@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { BASE_URL, ENDPOINTS, TAB_VALUES } from "./constants";
 
 export const filterIngredients = (data) => {
@@ -65,4 +66,12 @@ export const fetchWithRefresh = async (endpoint, options) => {
   }
 };
 
-// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1MzUzZDk2NTJiNGNmMDAxZDg2YzZhNyIsImlhdCI6MTY5Nzk5MzEwOCwiZXhwIjoxNjk3OTk0MzA4fQ.UIWKJNxDD59-OZB6JzdrqRM67WyNGJw3x57MMyyTt94
+export function useForm(inputValues={}) {
+  const [values, setValues] = useState(inputValues);
+
+  const handleChange = (event) => {
+    const {value, name} = event.target;
+    setValues({...values, [name]: value});
+  };
+  return {values, handleChange, setValues};
+}

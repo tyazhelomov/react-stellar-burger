@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import styles from './form.module.css'
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Button, Input } from "@ya.praktikum/react-developer-burger-ui-components";
@@ -6,14 +6,15 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { auth } from "../services/actions/auth";
 import { ENDPOINTS } from "../utils/constants";
 import { errorStateSlice } from "../services/error-state";
+import { useForm } from "../utils/utils";
 
 function ForgotPasswordPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const { values, handleChange } = useForm({ email: '' });
   const { refreshForm } = errorStateSlice.actions;
 
-  if (!email) {
+  if (!values.email) {
     dispatch(refreshForm());
   }
 
@@ -39,7 +40,7 @@ function ForgotPasswordPage() {
           ENDPOINTS.RESET_PASSWORD_REQUEST,
           'POST',
           {
-            "email": email,
+            "email": values.email,
           }
         )
       )
@@ -47,7 +48,7 @@ function ForgotPasswordPage() {
 
       navigate('/reset-password');
     },
-    [dispatch, email, navigate]
+    [dispatch, values, navigate]
   );
 
   if (userState.user) {
@@ -58,13 +59,9 @@ function ForgotPasswordPage() {
     );
   }
 
-  const onChange = e => {
-    setEmail(e.target.value);
-  };
-
   return (
     <div className={styles.main}>
-      <form className={styles.form}>
+      <form className={styles.form} onSubmit={resetPasswordRequest}>
         { userState.isLoading ? 
           <>
             <h1 className='text text_type_main-medium'>
@@ -80,23 +77,22 @@ function ForgotPasswordPage() {
             <Input
               type={'email'}
               placeholder={'Укажите E-mail'}
-              onChange={onChange}
-              value={email}
+              onChange={handleChange}
+              value={values.email}
               name={'email'}
               error={errorState.error}
               errorText={'Ошибка'}
               size={'default'}
             />
-            <div className={styles.button}>
+            <button className={styles.button}>
               <Button
                 htmlType="button"
                 type="primary"
                 size="large"
-                onClick={resetPasswordRequest}
               >
                 Восстановить
               </Button>
-            </div>
+            </button>
           </div>
         }
         { errorState.error && 

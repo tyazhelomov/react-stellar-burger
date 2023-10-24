@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import styles from './form.module.css'
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Button, Input, PasswordInput } from "@ya.praktikum/react-developer-burger-ui-components";
@@ -6,13 +6,14 @@ import { Link, Navigate } from "react-router-dom";
 import { ENDPOINTS } from "../utils/constants";
 import { auth } from "../services/actions/auth";
 import { errorStateSlice } from "../services/error-state";
+import { useForm } from "../utils/utils";
 
 function RegisterPage() {
   const dispatch = useDispatch();
-  const [form, setValue] = useState({ email: '', password: '', name: '' });
+  const { values, handleChange } = useForm({ email: '', password: '', name: '' });
   const { refreshForm } = errorStateSlice.actions;
 
-  if (!form.email) {
+  if (!values.email) {
     dispatch(refreshForm());
   }
 
@@ -24,14 +25,14 @@ function RegisterPage() {
           ENDPOINTS.REGISTER,
           'POST',
           {
-            "email": form.email, 
-            "password": form.password, 
-            "name": form.name, 
+            "email": values.email, 
+            "password": values.password, 
+            "name": values.name, 
           }
         )
       )
     },
-    [dispatch, form]
+    [dispatch, values]
   );
 
   const { userState, errorState } = useSelector(store => ({
@@ -56,13 +57,9 @@ function RegisterPage() {
     );
   }
 
-  const onChange = e => {
-    setValue({ ...form, [e.target.name]: e.target.value });
-  };
-
   return (
     <div className={styles.main}>
-      <form className={styles.form}>
+      <form className={styles.form} onSubmit={registerUser}>
         { userState.isLoading ? 
           <>
             <h1 className='text text_type_main-medium'>
@@ -78,8 +75,8 @@ function RegisterPage() {
             <Input
               type={'text'}
               placeholder={'Имя'}
-              onChange={onChange}
-              value={form.name}
+              onChange={handleChange}
+              value={values.name}
               name={'name'}
               error={false}
               errorText={'Ошибка'}
@@ -88,8 +85,8 @@ function RegisterPage() {
             <Input
               type={'email'}
               placeholder={'E-mail'}
-              onChange={onChange}
-              value={form.email}
+              onChange={handleChange}
+              value={values.email}
               name={'email'}
               error={false}
               errorText={'Ошибка'}
@@ -97,21 +94,20 @@ function RegisterPage() {
             />
             <PasswordInput
               type={'password'}
-              onChange={onChange}
-              value={form.password}
+              onChange={handleChange}
+              value={values.password}
               name={'password'}
               extraClass="mb-2"
             />
-            <div className={styles.button}>
+            <button className={styles.button}>
               <Button
                 htmlType="button"
                 type="primary"
                 size="large"
-                onClick={registerUser}
               >
                 Зарегистрироваться
               </Button>
-            </div>
+            </button>
           </div>
         }
         { errorState.error && 

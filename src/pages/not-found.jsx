@@ -14,7 +14,7 @@ function NotFound404() {
       <form className={styles.form}>
         <h1 className="text text_type_main-medium">Страница не найдена</h1>
         <div className={styles.input}>
-          <div className={styles.button}>
+          <button className={styles.button}>
             <Button
               htmlType="button"
               type="primary"
@@ -23,7 +23,7 @@ function NotFound404() {
             >
               Назад
             </Button>
-          </div>
+          </button>
         </div>
       </form>
     </div>

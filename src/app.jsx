@@ -4,11 +4,20 @@ import { ProtectedRouteElement } from "./components/protected-route";
 import AppHeader from "./components/header/header";
 import IngredientDetails from './components/ingredient-details/ingredient-details';
 import Modal from './components/modal/modal';
+import { useDispatch } from 'react-redux';
+import { getIngredients } from './services/actions/get-ingredients';
+import { useEffect } from 'react';
 
 function App() {
   const location = useLocation();
   const background = location.state && location.state.background;
   const modalInfoLocalStorage = JSON.parse(localStorage.getItem('modal-info'));
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getIngredients());
+  }, [dispatch]);
  
   return (
     <>

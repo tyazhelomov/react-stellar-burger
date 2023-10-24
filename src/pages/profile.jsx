@@ -6,6 +6,7 @@ import { NavLink } from "react-router-dom";
 import { auth } from "../services/actions/auth";
 import { ENDPOINTS } from "../utils/constants";
 import { userStateSlice } from "../services/user-state";
+import { useForm } from "../utils/utils";
 
 function ProfilePage() {
   const dispatch = useDispatch();
@@ -24,7 +25,7 @@ function ProfilePage() {
     )
   }, [dispatch])
 
-  const [form, setValue] = useState({ name: userState.user.name, email: userState.user.email, password: undefined });
+  const { values, handleChange } = useForm({ name: userState.user.name, email: userState.user.email, password: undefined });
 
   const updateUser = useCallback(
     e => {
@@ -34,19 +35,15 @@ function ProfilePage() {
           ENDPOINTS.USER_INFO,
           'PATCH',
           {
-            "name": form.name,
-            "email": form.email, 
-            "password": form.password,
+            "name": values.name,
+            "email": values.email, 
+            "password": values.password,
           }
         )
       )
     },
-    [dispatch, form]
+    [dispatch, values]
   );
-
-  const onChange = e => {
-    setValue({ ...form, [e.target.name]: e.target.value });
-  };
 
   const [fields, setFields] = useState({ name: false, email: false });
 
@@ -115,13 +112,14 @@ function ProfilePage() {
               В этом разделе вы можете изменить свои персональные данные
             </p>
           </div>
+          <form onSubmit={updateUser}>
             <div className={styles.input}>
               <Input
                 type={'text'}
                 placeholder={'Имя'}
-                onChange={onChange}
+                onChange={handleChange}
                 icon="EditIcon"
-                value={form.name}
+                value={values.name}
                 name={'name'}
                 error={false}
                 errorText={'Ошибка'}
@@ -132,9 +130,9 @@ function ProfilePage() {
               <Input
                 type={'email'}
                 placeholder={'E-mail'}
-                onChange={onChange}
+                onChange={handleChange}
                 icon="EditIcon"
-                value={form.email}
+                value={values.email}
                 name={'email'}
                 error={false}
                 errorText={'Ошибка'}
@@ -144,22 +142,22 @@ function ProfilePage() {
               />
               <PasswordInput
                 type={'password'}
-                onChange={onChange}
-                value={form.password}
+                onChange={handleChange}
+                value={values.password}
                 name={'password'}
                 icon="EditIcon"
               />
-              <div className={ styles.button }>
+              <button className={ styles.button }>
                 <Button
                   htmlType="button"
                   type="primary"
                   size="large"
-                  onClick={ updateUser }
                 >
                   Сохранить
                 </Button>
-              </div>
+              </button>
             </div>
+          </form>
         </>
       }
       { errorState.error && 

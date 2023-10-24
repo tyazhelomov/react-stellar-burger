@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import styles from './form.module.css'
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Button, Input, PasswordInput } from "@ya.praktikum/react-developer-burger-ui-components";
@@ -6,14 +6,15 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { auth } from "../services/actions/auth";
 import { ENDPOINTS } from "../utils/constants";
 import { errorStateSlice } from "../services/error-state";
+import { useForm } from "../utils/utils";
 
 function ForgotPasswordPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ password: '', token: '' });
+  const { values, handleChange } = useForm({ password: '', token: '' });
   const { refreshForm } = errorStateSlice.actions;
 
-  if (!form.password) {
+  if (!values.password) {
     dispatch(refreshForm());
   }
 
@@ -39,8 +40,8 @@ function ForgotPasswordPage() {
           ENDPOINTS.RESET_PASSWORD,
           'POST',
           {
-            "password": form.password,
-            "token": form.token,
+            "password": values.password,
+            "token": values.token,
           }
         )
       )
@@ -48,13 +49,8 @@ function ForgotPasswordPage() {
 
       navigate('/');
     },
-    [dispatch, form, navigate]
+    [dispatch, values, navigate]
   );
-
-  const onChange = e => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
   const isUserAllowedToChangePassword = localStorage.getItem('reset-password');
 
   if (userState.user) {
@@ -75,7 +71,7 @@ function ForgotPasswordPage() {
 
   return (
     <div className={styles.main}>
-      <form className={styles.form}>
+      <form className={styles.form} onSubmit={resetPasswordRequest}>
         { userState.isLoading ? 
           <>
             <h1 className='text text_type_main-medium'>
@@ -89,8 +85,8 @@ function ForgotPasswordPage() {
         { !userState.isLoading &&
           <div className={styles.input}>
             <PasswordInput
-              onChange={onChange}
-              value={form.password}
+              onChange={handleChange}
+              value={values.password}
               name={'password'}
               extraClass="mb-2"
               placeholder={'Введите новый пароль'}
@@ -98,14 +94,14 @@ function ForgotPasswordPage() {
             <Input
               type={'confirm-code'}
               placeholder={'Введите код из письма'}
-              onChange={onChange}
-              value={form.token}
+              onChange={handleChange}
+              value={values.token}
               name={'token'}
               error={false}
               errorText={'Ошибка'}
               size={'default'}
             />
-            <div className={styles.button}>
+            <button className={styles.button}>
               <Button
                 htmlType="button"
                 type="primary"
@@ -114,7 +110,7 @@ function ForgotPasswordPage() {
               >
                 Сохранить
               </Button>
-            </div>
+            </button>
           </div>
         }
         { errorState.error && 

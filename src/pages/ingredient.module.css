@@ -35,6 +35,8 @@
 
 .button {
   margin: 50px auto;
+  background-color: rgba(0, 0, 0, 0);
+  border: 0;
 }
 
 .loader {
