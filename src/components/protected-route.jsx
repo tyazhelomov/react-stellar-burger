@@ -12,8 +12,6 @@ export const ProtectedRouteElement = ({ element }) => {
     userState: store.userState,
   }), shallowEqual);
 
-  console.log(123, userState)
-
   useEffect(() => {
     dispatch(
       auth(
@@ -22,8 +20,6 @@ export const ProtectedRouteElement = ({ element }) => {
       )
     )
   }, [dispatch])
-
-  console.log(1234, userState)
 
   return userState.user ? element : <Navigate to="/login" replace/>;
 }

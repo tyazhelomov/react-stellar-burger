@@ -26,7 +26,6 @@ export function auth(endpoint, method, data) {
       },
     })
     .then(data => {
-      console.log(111, data)
       const loginInfo = {
         user: data.user,
         isLoading: false,
@@ -39,7 +38,7 @@ export function auth(endpoint, method, data) {
       dispatch(updateForm(errorInfo));
     })
     .catch((err) => {
-      console.error(123, err)
+      console.error(err)
 
       const loginInfo = {
         isLoading: false,
@@ -48,8 +47,6 @@ export function auth(endpoint, method, data) {
         error: true,
         errorMsg: ERROR_MAP[err.message],
       };
-
-      console.log(999, errorInfo, loginInfo)
 
       dispatch(update(loginInfo));
       dispatch(updateForm(errorInfo));

@@ -59,8 +59,6 @@ function LoginPage() {
     setValue({ ...form, [e.target.name]: e.target.value });
   };
 
-  console.log(errorState, userState)
-
   return (
     <div className={styles.main}>
       <form className={styles.form}>

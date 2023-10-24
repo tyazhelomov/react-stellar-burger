@@ -53,8 +53,6 @@ export function getIngredient(id) {
     dispatch(update(loginInfo));
     fetchWithRefresh(ENDPOINTS.GET_INGREDIENTS)
       .then(data => {
-        console.log(data)
-
         const element = data.data.find(el => el._id === id);
 
         if (!element) {

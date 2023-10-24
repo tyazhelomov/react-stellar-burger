@@ -2,7 +2,6 @@ import React from 'react';
 import styles from './ingredient-details.module.css';
 
 function IngredientDetails() {
-  console.log('IngredientDetails')
   const modalInfoLocalStorage = JSON.parse(localStorage.getItem('modal-info'));
 
   return (

@@ -57,8 +57,6 @@ function ForgotPasswordPage() {
 
   const isUserAllowedToChangePassword = localStorage.getItem('reset-password');
 
-  console.log(123213213, isUserAllowedToChangePassword)
-
   if (userState.user) {
     return (
       <Navigate

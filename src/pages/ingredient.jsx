@@ -6,18 +6,16 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getIngredient } from "../services/actions/get-ingredients";
 
 function IngredientPage() {
-  console.log(444)
   const dispatch = useDispatch();
+  const { id } = useParams();
   const { userState, ingredient, errorState } = useSelector(store => ({
     userState: store.userState,
     ingredient: store.ingredient,
     errorState: store.errorState,
   }), shallowEqual);
-  const { id } = useParams();
 
   useEffect(() => {
     dispatch(getIngredient(id));
-    console.log(333)
   }, [dispatch, id])
 
   const navigate = useNavigate();
@@ -25,8 +23,6 @@ function IngredientPage() {
   const returnUser = () => {
     navigate('/');
   }
-
-  console.log(111)
 
   return (
     <div className={styles.main}>
