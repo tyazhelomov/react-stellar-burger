@@ -3,20 +3,15 @@ import { Counter, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-c
 import styles from './ingredient.module.css';
 import { ingredientPropType } from '../../utils/prop-types';
 import { TAB_VALUES } from '../../utils/constants';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { modalInfoSlice } from '../../services/modal-info';
-import { modalVisibilitySlice } from '../../services/modal-visibility';
+import { shallowEqual, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from "react-router-dom";
 
 function Ingredient({ element }) {
   const { chosenIngredients } = useSelector(store => ({
     chosenIngredients: store.chosenIngredients,
   }), shallowEqual);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { addModalInfo } = modalInfoSlice.actions;
-  const { openModal } = modalVisibilitySlice.actions;
 
   const [, dragRef] = useDrag({
     type: "ingredient",
@@ -30,22 +25,12 @@ function Ingredient({ element }) {
     return amount || undefined;
   }
 
-  const addInfoAndOpenModal = (element) => {
-    const info = {
-      header: 'Детали ингредиента',
-      ingredient: true,
-      element,
-    }
-
-    dispatch(addModalInfo(info));
-    dispatch(openModal());
-
+  const openIngredientInfo = (element) => {
     navigate(`/ingredients/${element._id}`, { state: { background: location }})
-    localStorage.setItem('modal-info', JSON.stringify(info))
   }
 
   return (
-    <div className={styles.item} onClick={(e) => addInfoAndOpenModal(element)} ref={dragRef}>
+    <div className={styles.item} onClick={(e) => openIngredientInfo(element)} ref={dragRef}>
       <div>
         { isAdded() && <Counter count={isAdded()} size="small"/>}
       </div>

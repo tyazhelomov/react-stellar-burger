@@ -85,6 +85,7 @@ function ForgotPasswordPage() {
               size={'default'}
             />
             <Button
+              htmlType="submit"
               type="primary"
               size="large"
               extraClass={ styles.button }

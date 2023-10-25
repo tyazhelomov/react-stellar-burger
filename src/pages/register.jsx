@@ -100,6 +100,7 @@ function RegisterPage() {
               extraClass="mb-2"
             />
             <Button
+              htmlType="submit"
               type="primary"
               size="large"
               extraClass={ styles.button }

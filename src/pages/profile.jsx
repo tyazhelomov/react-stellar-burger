@@ -148,6 +148,7 @@ function ProfilePage() {
                 icon="EditIcon"
               />
               <Button
+                htmlType="submit"
                 type="primary"
                 size="large"
                 extraClass={ styles.button }

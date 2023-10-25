@@ -51,8 +51,6 @@ function LoginPage() {
 
   const redirectUrl = location.state?.from || '/';
 
-  console.log(redirectUrl)
-
   if (userState.user) {
     return (
       <Navigate
@@ -94,6 +92,7 @@ function LoginPage() {
               extraClass="mb-2"
             />
             <Button
+              htmlType="submit"
               type="primary"
               size="large"
               extraClass={ styles.button }

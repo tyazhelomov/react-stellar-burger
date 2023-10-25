@@ -9,8 +9,7 @@ import IngredientInfo from "../components/ingredient-info/ingredient-info";
 function IngredientPage() {
   const dispatch = useDispatch();
   const { id } = useParams();
-  const { userState, ingredient, errorState } = useSelector(store => ({
-    userState: store.userState,
+  const { ingredient, errorState } = useSelector(store => ({
     ingredient: store.ingredient,
     errorState: store.errorState,
   }), shallowEqual);
@@ -25,9 +24,11 @@ function IngredientPage() {
     navigate('/');
   }
 
+  console.log(ingredient)
+
   return (
     <div className={styles.main}>
-    { userState.isLoading &&
+    { ingredient.isLoading &&
       <>
         <h1 className='text text_type_main-medium'>
           Получаем информацию об ингредиенте...
@@ -35,12 +36,12 @@ function IngredientPage() {
         <span className={styles.loader}></span>
       </>
     }
-    { !userState.isLoading && ingredient._id &&
+    { !ingredient.isLoading && ingredient.element?._id &&
       <>
         <h1 className='text text_type_main-large'>
           Детали ингредиента
         </h1>
-        <IngredientInfo ingredient={ingredient} />
+        <IngredientInfo ingredient={ingredient.element} />
       </>
     }
     { errorState.error && 

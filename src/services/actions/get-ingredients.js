@@ -43,14 +43,10 @@ export function getIngredients() {
 
 export function getIngredient(id) {
   return function(dispatch) {
-    const { update } = userStateSlice.actions;
     const { add } = ingredientSlice.actions;
     const { updateForm } = errorStateSlice.actions;
-    const loginInfo = {
-      isLoading: true,
-    };
 
-    dispatch(update(loginInfo));
+    dispatch(add({ isLoading: true }));
     fetchWithRefresh(ENDPOINTS.GET_INGREDIENTS)
       .then(data => {
         const element = data.data.find(el => el._id === id);
@@ -59,17 +55,14 @@ export function getIngredient(id) {
           throw new Error('Ингредиент не найден')
         }
 
-        const loginInfo = {
-          isLoading: false,
-        };
-
         const errorInfo = {
           error: false,
         };
 
+        console.log(element)
+
         dispatch(updateForm(errorInfo));
-        dispatch(update(loginInfo));
-        dispatch(add(element));
+        dispatch(add({ isLoading: false, element }));
       })
       .catch((err) => {
         console.error(err);
@@ -79,12 +72,8 @@ export function getIngredient(id) {
           errorMsg: err.message,
         };
 
-        const loginInfo = {
-          isLoading: false,
-        };
-
         dispatch(updateForm(errorInfo));
-        dispatch(update(loginInfo));
+        dispatch(add({ isLoading: false }));
       });
   };
 }

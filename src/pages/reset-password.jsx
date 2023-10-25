@@ -102,6 +102,7 @@ function ForgotPasswordPage() {
               size={'default'}
             />
               <Button
+                htmlType="submit"
                 type="primary"
                 size="large"
                 onClick={resetPasswordRequest}

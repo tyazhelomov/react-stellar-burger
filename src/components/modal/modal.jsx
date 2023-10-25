@@ -4,15 +4,20 @@ import styles from './modal.module.css';
 import { CloseIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 import ModalOverlay from "../modal-overlay/modal-overlay";
 import PropTypes from "prop-types";
+import { shallowEqual, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 const modalRoot = document.getElementById("modal");
 
 function Modal({ children, onClose }) {
-  const modalInfoLocalStorage = JSON.parse(localStorage.getItem('modal-info'));
+  const { id } = useParams();
+  const { modalInfo } = useSelector(store => ({
+    modalInfo: store.modalInfo,
+  }), shallowEqual);
 
   React.useEffect(() => {
     const closeByKey = (e) => {
       if (e.code === 'Escape') {
-        onClose(modalInfoLocalStorage);
+        onClose();
       }
     };
 
@@ -21,7 +26,9 @@ function Modal({ children, onClose }) {
     return () => {
       document.removeEventListener("keydown", closeByKey);
     }
-  }, [modalInfoLocalStorage, onClose])
+  }, [onClose])
+
+  const header = id ? 'Детали ингредиента' : modalInfo?.header;
 
   return ReactDOM.createPortal(
     (
@@ -29,9 +36,9 @@ function Modal({ children, onClose }) {
         <div className={styles.modal} onClick={(e) => e.stopPropagation()}> 
           <div className={styles.header}>
             <p className="text text_type_main-large">
-              { modalInfoLocalStorage?.header }
+              { header }
             </p>
-            <CloseIcon type="primary" onClick={() => onClose(modalInfoLocalStorage)} />
+            <CloseIcon type="primary" onClick={() => onClose()} />
           </div>
           { children }
         </div>
