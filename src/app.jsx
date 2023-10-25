@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { HomePage, LoginPage, ForgotPasswordPage, IngredientPage, ProfilePage, RegisterPage, ResetPasswordPage, NotFound404 } from './pages';
 import { ProtectedRouteElement } from "./components/protected-route";
 import AppHeader from "./components/header/header";
@@ -6,14 +6,29 @@ import IngredientDetails from './components/ingredient-details/ingredient-detail
 import Modal from './components/modal/modal';
 import { useDispatch } from 'react-redux';
 import { getIngredients } from './services/actions/get-ingredients';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
+import { modalInfoSlice } from './services/modal-info';
+import { modalVisibilitySlice } from './services/modal-visibility';
 
 function App() {
   const location = useLocation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { removeModalInfo } = modalInfoSlice.actions;
+  const { closeModal } = modalVisibilitySlice.actions;
+
+  const closeModalFunc = useCallback((modalInfoLocalStorage) => {
+    dispatch(removeModalInfo());
+    dispatch(closeModal());
+
+    if (modalInfoLocalStorage) {
+      localStorage.removeItem('modal-info');
+      navigate('/')
+    }
+  }, [closeModal, dispatch, navigate, removeModalInfo]);
+
   const background = location.state && location.state.background;
   const modalInfoLocalStorage = JSON.parse(localStorage.getItem('modal-info'));
-
-  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getIngredients());
@@ -38,7 +53,7 @@ function App() {
             <Route
               path='/ingredients/:id'
               element={
-                <Modal>
+                <Modal onClose={closeModalFunc}>
                   <IngredientDetails />
                 </Modal>
               }

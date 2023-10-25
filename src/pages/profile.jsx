@@ -6,7 +6,7 @@ import { NavLink } from "react-router-dom";
 import { auth } from "../services/actions/auth";
 import { ENDPOINTS } from "../utils/constants";
 import { userStateSlice } from "../services/user-state";
-import { useForm } from "../utils/utils";
+import { useForm } from "../hooks/useForm";
 
 function ProfilePage() {
   const dispatch = useDispatch();
@@ -25,7 +25,7 @@ function ProfilePage() {
     )
   }, [dispatch])
 
-  const { values, handleChange } = useForm({ name: userState.user.name, email: userState.user.email, password: undefined });
+  const { values, handleChange } = useForm({ name: userState.user.name, email: userState.user.email, password: '' });
 
   const updateUser = useCallback(
     e => {
@@ -147,15 +147,14 @@ function ProfilePage() {
                 name={'password'}
                 icon="EditIcon"
               />
-              <button className={ styles.button }>
-                <Button
-                  htmlType="button"
-                  type="primary"
-                  size="large"
-                >
-                  Сохранить
-                </Button>
-              </button>
+              <Button
+                htmlType="button"
+                type="primary"
+                size="large"
+                extraClass={ styles.button }
+              >
+                Сохранить
+              </Button>
             </div>
           </form>
         </>

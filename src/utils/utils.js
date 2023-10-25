@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { BASE_URL, ENDPOINTS, TAB_VALUES } from "./constants";
 
 export const filterIngredients = (data) => {
@@ -22,7 +21,7 @@ export function checkResponse(res) {
 }
 
 export const refreshToken = () => {
-  return fetch(`${ BASE_URL }${ ENDPOINTS.GET_TOKEN }`, {
+  return requester(ENDPOINTS.GET_TOKEN, {
     method: "POST",
     headers: {
       "Content-Type": "application/json;charset=utf-8",
@@ -30,13 +29,14 @@ export const refreshToken = () => {
     body: JSON.stringify({
       token: localStorage.getItem("refreshToken"),
     }),
-  }).then(checkResponse);
+  });
 };
+
+const requester = async (endpoint, options) => await fetch(`${ BASE_URL }${ endpoint }`, options).then(checkResponse);
 
 export const fetchWithRefresh = async (endpoint, options) => {
   try {
-    const request = await fetch(`${ BASE_URL }${ endpoint }`, options);
-    const response = await checkResponse(request);
+    const response = await requester(endpoint, options);
 
     if (response.success && response.accessToken) {
         const [, accessToken] = response.accessToken.split(' ');
@@ -47,7 +47,15 @@ export const fetchWithRefresh = async (endpoint, options) => {
     return response;
   } catch (err) {
     if (err.message === "jwt expired") {
-      const refreshData = await refreshToken();
+      const refreshData = await requester(ENDPOINTS.GET_TOKEN, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json;charset=utf-8",
+        },
+        body: JSON.stringify({
+          token: localStorage.getItem("refreshToken"),
+        }),
+      });
 
       if (!refreshData.success) {
         return Promise.reject(refreshData);
@@ -65,13 +73,3 @@ export const fetchWithRefresh = async (endpoint, options) => {
     }
   }
 };
-
-export function useForm(inputValues={}) {
-  const [values, setValues] = useState(inputValues);
-
-  const handleChange = (event) => {
-    const {value, name} = event.target;
-    setValues({...values, [name]: value});
-  };
-  return {values, handleChange, setValues};
-}

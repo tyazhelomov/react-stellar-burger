@@ -5,14 +5,25 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import Modal from "../components/modal/modal";
 import OrderDetails from "../components/order-details/order-details";
-import { shallowEqual, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { modalInfoSlice } from "../services/modal-info";
+import { modalVisibilitySlice } from "../services/modal-visibility";
+import { useCallback } from "react";
 
 function HomePage() {
+  const dispatch = useDispatch();
   const { modalInfo, modalVisibility, userState } = useSelector(store => ({
     modalInfo: store.modalInfo,
     modalVisibility: store.modalVisibility,
     userState: store.userState,
   }), shallowEqual);
+  const { removeModalInfo } = modalInfoSlice.actions;
+  const { closeModal } = modalVisibilitySlice.actions;
+
+  const closeModalFunc = useCallback(() => {
+    dispatch(removeModalInfo());
+    dispatch(closeModal());
+  }, [closeModal, dispatch, removeModalInfo]);
 
   return (
     <DndProvider backend={ HTML5Backend }>
@@ -33,7 +44,7 @@ function HomePage() {
         }
       </main>
         { modalVisibility.isVisible && 
-          <Modal >
+          <Modal onClose={closeModalFunc}>
               { modalInfo?.order && <OrderDetails />}
           </Modal>
         }

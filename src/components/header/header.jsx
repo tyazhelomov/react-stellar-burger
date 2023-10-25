@@ -38,7 +38,9 @@ function AppHeader() {
             </div>
           </Button>
         </div>
-        <Logo />
+        <button className={styles.button} onClick={moveToHomePage}>
+          <Logo />
+        </button>
         <div className={styles.profile}>
           <Button htmlType="button" type="secondary" size="small" onClick={moveToProfile}>
             <div className={styles.button}>

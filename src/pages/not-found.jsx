@@ -14,16 +14,15 @@ function NotFound404() {
       <form className={styles.form}>
         <h1 className="text text_type_main-medium">Страница не найдена</h1>
         <div className={styles.input}>
-          <button className={styles.button}>
-            <Button
-              htmlType="button"
-              type="primary"
-              size="large"
-              onClick={returnUser}
-            >
-              Назад
-            </Button>
-          </button>
+          <Button
+            htmlType="button"
+            type="primary"
+            size="large"
+            onClick={returnUser}
+            extraClass={ styles.button }
+          >
+            Назад
+          </Button>
         </div>
       </form>
     </div>

@@ -1,5 +1,5 @@
 
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { auth } from '../services/actions/auth';
@@ -7,10 +7,7 @@ import { ENDPOINTS } from '../utils/constants';
 
 export const ProtectedRouteElement = ({ element }) => {
   const dispatch = useDispatch();
-
-  const { userState } = useSelector(store => ({
-    userState: store.userState,
-  }), shallowEqual);
+  const location = useLocation();
 
   useEffect(() => {
     dispatch(
@@ -21,5 +18,13 @@ export const ProtectedRouteElement = ({ element }) => {
     )
   }, [dispatch])
 
-  return userState.user ? element : <Navigate to="/login" replace/>;
+  const { userState } = useSelector(store => ({
+    userState: store.userState,
+  }), shallowEqual);
+
+  if (!userState.user) {
+    return <Navigate to="/login" state={{ from: location }}/>;
+  }
+
+  return element;
 }

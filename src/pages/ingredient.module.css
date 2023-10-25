@@ -7,32 +7,6 @@
   justify-content: center;
 }
 
-.img {
-  max-width: 520px;
-  margin: 0 auto;
-}
-
-.info {
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-  gap: 32px;
-  min-width: 520px;
-  margin: 0;
-}
-
-.pfc {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-.pfc_element {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
 .button {
   margin: 50px auto;
   background-color: rgba(0, 0, 0, 0);

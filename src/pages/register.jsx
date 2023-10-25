@@ -6,7 +6,7 @@ import { Link, Navigate } from "react-router-dom";
 import { ENDPOINTS } from "../utils/constants";
 import { auth } from "../services/actions/auth";
 import { errorStateSlice } from "../services/error-state";
-import { useForm } from "../utils/utils";
+import { useForm } from "../hooks/useForm";
 
 function RegisterPage() {
   const dispatch = useDispatch();
@@ -99,15 +99,14 @@ function RegisterPage() {
               name={'password'}
               extraClass="mb-2"
             />
-            <button className={styles.button}>
-              <Button
-                htmlType="button"
-                type="primary"
-                size="large"
-              >
-                Зарегистрироваться
-              </Button>
-            </button>
+            <Button
+              htmlType="button"
+              type="primary"
+              size="large"
+              extraClass={ styles.button }
+            >
+              Зарегистрироваться
+            </Button>
           </div>
         }
         { errorState.error && 

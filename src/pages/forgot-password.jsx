@@ -6,7 +6,7 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { auth } from "../services/actions/auth";
 import { ENDPOINTS } from "../utils/constants";
 import { errorStateSlice } from "../services/error-state";
-import { useForm } from "../utils/utils";
+import { useForm } from "../hooks/useForm";
 
 function ForgotPasswordPage() {
   const dispatch = useDispatch();
@@ -84,15 +84,14 @@ function ForgotPasswordPage() {
               errorText={'Ошибка'}
               size={'default'}
             />
-            <button className={styles.button}>
-              <Button
-                htmlType="button"
-                type="primary"
-                size="large"
-              >
-                Восстановить
-              </Button>
-            </button>
+            <Button
+              htmlType="button"
+              type="primary"
+              size="large"
+              extraClass={ styles.button }
+            >
+              Восстановить
+            </Button>
           </div>
         }
         { errorState.error && 

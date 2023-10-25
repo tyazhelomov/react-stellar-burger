@@ -2,14 +2,15 @@ import { useCallback, useEffect } from "react";
 import styles from './form.module.css'
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Button, Input, PasswordInput } from "@ya.praktikum/react-developer-burger-ui-components";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useLocation } from "react-router-dom";
 import { auth } from "../services/actions/auth";
 import { ENDPOINTS } from "../utils/constants";
 import { errorStateSlice } from "../services/error-state";
-import { useForm } from "../utils/utils";
+import { useForm } from "../hooks/useForm";
 
 function LoginPage() {
   const dispatch = useDispatch();
+  const location = useLocation();
   const { values, handleChange } = useForm({ email: '', password: '' });
   const { refreshForm } = errorStateSlice.actions;
 
@@ -48,10 +49,12 @@ function LoginPage() {
     )
   }, [dispatch])
 
+  const redirectUrl = location.state?.from || '/';
+
   if (userState.user) {
     return (
       <Navigate
-        to={'/'}
+        to={ redirectUrl }
       />
     );
   }
@@ -88,15 +91,14 @@ function LoginPage() {
               name={'password'}
               extraClass="mb-2"
             />
-            <button className={ styles.button }>
-              <Button
-                htmlType="button"
-                type="primary"
-                size="large"
-              >
-                Войти
-              </Button>
-            </button>
+            <Button
+              htmlType="button"
+              type="primary"
+              size="large"
+              extraClass={ styles.button }
+            >
+              Войти
+            </Button>
           </div>
         }
         { errorState.error && 
