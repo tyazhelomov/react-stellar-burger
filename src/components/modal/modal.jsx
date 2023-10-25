@@ -12,7 +12,7 @@ function Modal({ children, onClose }) {
   React.useEffect(() => {
     const closeByKey = (e) => {
       if (e.code === 'Escape') {
-        onClose();
+        onClose(modalInfoLocalStorage);
       }
     };
 
@@ -21,7 +21,7 @@ function Modal({ children, onClose }) {
     return () => {
       document.removeEventListener("keydown", closeByKey);
     }
-  }, [onClose])
+  }, [modalInfoLocalStorage, onClose])
 
   return ReactDOM.createPortal(
     (

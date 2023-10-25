@@ -148,7 +148,6 @@ function ProfilePage() {
                 icon="EditIcon"
               />
               <Button
-                htmlType="button"
                 type="primary"
                 size="large"
                 extraClass={ styles.button }
