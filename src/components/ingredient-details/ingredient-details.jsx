@@ -1,24 +1,24 @@
-import { useEffect } from 'react';
 import IngredientInfo from '../ingredient-info/ingredient-info';
 import styles from './ingredient-details.module.css';
 import { useParams } from 'react-router-dom';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { getIngredient } from '../../services/actions/get-ingredients';
+import { shallowEqual, useSelector } from 'react-redux';
+import { TAB_VALUES } from '../../utils/constants';
 
 function IngredientDetails() {
-  const dispatch = useDispatch();
   const { id } = useParams();
-  const { ingredient } = useSelector(store => ({
-    ingredient: store.ingredient,
+  const { ingredients } = useSelector(store => ({
+    ingredients: store.ingredients,
   }), shallowEqual);
 
-  useEffect(() => {
-    dispatch(getIngredient(id));
-  }, [dispatch, id])
+  const ingredient = [
+    ...ingredients[TAB_VALUES.bun],
+    ...ingredients[TAB_VALUES.main],
+    ...ingredients[TAB_VALUES.sauce],
+  ].find(el => el._id === id);
 
   return (
     <div className={styles.block}>
-      <IngredientInfo ingredient={ingredient.element} />
+      <IngredientInfo ingredient={ingredient} />
     </div>
   )
 }

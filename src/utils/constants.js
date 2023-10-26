@@ -28,3 +28,7 @@ export const ERROR_MAP = {
   'email or password are incorrect': 'Неверный формат email или пароля',
   'User already exists': 'Пользователь с таким email уже зарегистрирован'
 }
+
+export const MODAL_HEADER = {
+  INGREDIENT_INFO: 'Детали ингредиента'
+}

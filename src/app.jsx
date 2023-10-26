@@ -7,6 +7,7 @@ import Modal from './components/modal/modal';
 import { useDispatch } from 'react-redux';
 import { getIngredients } from './services/actions/get-ingredients';
 import { useCallback, useEffect } from 'react';
+import { MODAL_HEADER } from './utils/constants';
 
 function App() {
   const location = useLocation();
@@ -42,7 +43,7 @@ function App() {
             <Route
               path='/ingredients/:id'
               element={
-                <Modal onClose={closeModalFunc}>
+                <Modal onClose={closeModalFunc} title={ MODAL_HEADER.INGREDIENT_INFO }>
                   <IngredientDetails />
                 </Modal>
               }
