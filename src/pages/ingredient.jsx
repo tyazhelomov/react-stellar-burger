@@ -24,8 +24,6 @@ function IngredientPage() {
     navigate('/');
   }
 
-  console.log(ingredient)
-
   return (
     <div className={styles.main}>
     { ingredient.isLoading &&

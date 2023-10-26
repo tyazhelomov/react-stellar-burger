@@ -26,7 +26,7 @@ function Ingredient({ element }) {
   }
 
   const openIngredientInfo = (element) => {
-    navigate(`/ingredients/${element._id}`, { state: { background: location }})
+    navigate(`/ingredients/${element._id}`, { state: { background: location, element }})
   }
 
   return (
