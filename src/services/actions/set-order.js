@@ -26,7 +26,7 @@ export function setOrder(ids) {
         authorization: `Bearer ${localStorage.getItem('accessToken')}`,
       },
     })
-    .then(data => {
+    .then(({ response: data }) => {
       const info = {
         order: true,
         orderNumber: data.order.number,

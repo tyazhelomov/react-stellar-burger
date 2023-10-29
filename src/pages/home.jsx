@@ -12,11 +12,13 @@ import { useCallback } from "react";
 
 function HomePage() {
   const dispatch = useDispatch();
-  const { modalInfo, modalVisibility, userState } = useSelector(store => ({
+  const { modalInfo, modalVisibility, userState, wsAllState } = useSelector(store => ({
     modalInfo: store.modalInfo,
     modalVisibility: store.modalVisibility,
     userState: store.userState,
+    wsAllState: store.wsAllState,
   }), shallowEqual);
+  console.log('wsAllState', wsAllState)
   const { removeModalInfo } = modalInfoSlice.actions;
   const { closeModal } = modalVisibilitySlice.actions;
 

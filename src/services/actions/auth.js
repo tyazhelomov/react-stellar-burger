@@ -5,7 +5,7 @@ import { userStateSlice } from '../user-state';
 
 export function auth(endpoint, method, data) {
   return function(dispatch) {
-    const { update, login } = userStateSlice.actions;
+    const { update, login, addToken } = userStateSlice.actions;
     const { updateForm } = errorStateSlice.actions;
     const loginInfo = {
       isLoading: true,
@@ -25,7 +25,7 @@ export function auth(endpoint, method, data) {
         authorization: `Bearer ${localStorage.getItem('accessToken')}`,
       },
     })
-    .then(data => {
+    .then(({ response: data, accessToken }) => {
       const loginInfo = {
         user: data.user,
         isLoading: false,
@@ -33,6 +33,10 @@ export function auth(endpoint, method, data) {
       const errorInfo = {
         error: false
       };
+
+      if (accessToken) {
+        dispatch(addToken(accessToken));
+      }
 
       dispatch(login(loginInfo));
       dispatch(updateForm(errorInfo));

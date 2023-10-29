@@ -16,7 +16,7 @@ export function getIngredients() {
 
     dispatch(update(loginInfo));
     fetchWithRefresh(ENDPOINTS.GET_INGREDIENTS)
-      .then(data => filterIngredients(data.data))
+      .then(({ response: data }) => filterIngredients(data.data))
       .then(data => {
         dispatch(set(data));
 
@@ -48,7 +48,7 @@ export function getIngredient(id) {
 
     dispatch(add({ isLoading: true }));
     fetchWithRefresh(ENDPOINTS.GET_INGREDIENTS)
-      .then(data => {
+      .then(({ response: data }) => {
         const element = data.data.find(el => el._id === id);
 
         if (!element) {

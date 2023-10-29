@@ -6,6 +6,8 @@ import { currentTabSlice } from './current-tab';
 import { userStateSlice } from './user-state';
 import { errorStateSlice } from './error-state';
 import { ingredientSlice } from './ingredient';
+import { wsAllSlice } from './socket-all';
+import { wsOwnerSlice } from './socket-owner';
 
 export const rootReducer = {
   ingredients: ingredientsSlice.reducer,
@@ -16,4 +18,6 @@ export const rootReducer = {
   userState: userStateSlice.reducer,
   errorState: errorStateSlice.reducer,
   ingredient: ingredientSlice.reducer,
+  wsAllState: wsAllSlice.reducer,
+  wsOwnerState: wsOwnerSlice.reducer,
 };

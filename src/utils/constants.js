@@ -30,5 +30,13 @@ export const ERROR_MAP = {
 }
 
 export const MODAL_HEADER = {
-  INGREDIENT_INFO: 'Детали ингредиента'
+  INGREDIENT_INFO: 'Детали ингредиента',
+  ORDER_INFO: 'Информация о заказе'
+}
+
+export const WS_URL = 'wss://norma.nomoreparties.space';
+
+export const WS_ENDPOINTS = {
+  ALL: '/orders/all',
+  OWNER: '/orders',
 }

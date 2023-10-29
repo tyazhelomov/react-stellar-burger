@@ -8,10 +8,15 @@ import thunk from "redux-thunk";
 import { configureStore } from "@reduxjs/toolkit";
 import { rootReducer } from "./services";
 import { HashRouter as Router } from "react-router-dom";
+import { socketMiddleware } from './middleware/socketMiddleware';
+import { WS_URL } from "./utils/constants";
 
 const store = configureStore({
   reducer: rootReducer,
-  middleware: [thunk]
+  middleware: [
+    thunk,
+    socketMiddleware(WS_URL),
+  ]
 })
 
 ReactDOM.render(

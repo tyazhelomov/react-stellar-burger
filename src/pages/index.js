@@ -2,9 +2,26 @@ import HomePage from './home';
 import LoginPage from './login';
 import ForgotPasswordPage from './forgot-password';
 import IngredientPage from './ingredient';
+import FeedPage from './feed';
+import FeedInfoPage from './feed-info';
 import ProfilePage from './profile';
+import OrdersPage from './orders';
+import OrderInfoPage from './order-info';
 import RegisterPage from './register';
 import ResetPasswordPage from './reset-password';
 import NotFound404 from './not-found';
 
-export { HomePage, LoginPage, ForgotPasswordPage, IngredientPage, ProfilePage, RegisterPage, ResetPasswordPage, NotFound404 };
+export {
+  HomePage,
+  LoginPage,
+  ForgotPasswordPage,
+  IngredientPage,
+  FeedPage,
+  FeedInfoPage,
+  ProfilePage,
+  OrdersPage,
+  OrderInfoPage,
+  RegisterPage,
+  ResetPasswordPage,
+  NotFound404,
+};

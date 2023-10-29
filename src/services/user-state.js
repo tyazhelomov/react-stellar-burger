@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const userStateSInitialState = {
   isLoading: false,
   user: undefined,
+  token: undefined,
 };
 
 export const userStateSlice = createSlice({
@@ -17,5 +18,6 @@ export const userStateSlice = createSlice({
     },
     login: (state, action) => action.payload,
     logoutUser: () => userStateSInitialState,
+    addToken: (state, action) => ({ ...state, token: action.payload })
   },
 });
