@@ -4,28 +4,28 @@ import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Button, Input, PasswordInput } from "@ya.praktikum/react-developer-burger-ui-components";
 import { NavLink } from "react-router-dom";
 import { auth } from "../services/actions/auth";
-import { ENDPOINTS, WS_ENDPOINTS } from "../utils/constants";
+import { ENDPOINTS } from "../utils/constants";
 import { userStateSlice } from "../services/user-state";
 import { useForm } from "../hooks/useForm";
 
 function ProfilePage() {
   const dispatch = useDispatch();
   const { logoutUser } = userStateSlice.actions;
-  const { userState, errorState, wsOwnerState } = useSelector(store => ({
+  const { userState, errorState } = useSelector(store => ({
     userState: store.userState,
     errorState: store.errorState,
-    wsOwnerState: store.wsOwnerState,
   }), shallowEqual);
-  console.log('wsOwnerState', wsOwnerState)
 
   useEffect(() => {
-    dispatch(
-      auth(
-        ENDPOINTS.USER_INFO,
-        'GET'
+    if (!userState.user) {
+      dispatch(
+        auth(
+          ENDPOINTS.USER_INFO,
+          'GET'
+        )
       )
-    )
-  }, [dispatch])
+    }
+  }, [dispatch, userState.user])
 
   const { values, handleChange } = useForm({ name: userState.user.name, email: userState.user.email, password: '' });
 
@@ -74,14 +74,6 @@ function ProfilePage() {
       dispatch(logoutUser())
     },
     [dispatch, logoutUser]
-  );
-
-  useEffect(
-    () => {
-      const token = localStorage.getItem('accessToken');
-      dispatch({ type: 'WS_OWNER_CONNECTION_START', endpoint: `${ WS_ENDPOINTS.OWNER }?token=${ userState.token || token }` });
-    },
-    [dispatch, userState.token]
   );
 
   return (

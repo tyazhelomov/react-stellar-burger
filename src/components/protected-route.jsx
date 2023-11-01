@@ -8,6 +8,9 @@ import { ENDPOINTS } from '../utils/constants';
 export const ProtectedRouteElement = ({ element }) => {
   const dispatch = useDispatch();
   const location = useLocation();
+  const { userState } = useSelector(store => ({
+    userState: store.userState,
+  }), shallowEqual);
 
   useEffect(() => {
     dispatch(
@@ -17,10 +20,6 @@ export const ProtectedRouteElement = ({ element }) => {
       )
     )
   }, [dispatch])
-
-  const { userState } = useSelector(store => ({
-    userState: store.userState,
-  }), shallowEqual);
 
   if (!userState.user) {
     return <Navigate to="/login" state={{ from: location }}/>;

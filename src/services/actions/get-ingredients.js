@@ -59,8 +59,6 @@ export function getIngredient(id) {
           error: false,
         };
 
-        console.log(element)
-
         dispatch(updateForm(errorInfo));
         dispatch(add({ isLoading: false, element }));
       })

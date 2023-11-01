@@ -3,7 +3,6 @@ import LoginPage from './login';
 import ForgotPasswordPage from './forgot-password';
 import IngredientPage from './ingredient';
 import FeedPage from './feed';
-import FeedInfoPage from './feed-info';
 import ProfilePage from './profile';
 import OrdersPage from './orders';
 import OrderInfoPage from './order-info';
@@ -17,7 +16,6 @@ export {
   ForgotPasswordPage,
   IngredientPage,
   FeedPage,
-  FeedInfoPage,
   ProfilePage,
   OrdersPage,
   OrderInfoPage,

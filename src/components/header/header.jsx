@@ -10,7 +10,7 @@ function AppHeader() {
   }
   
   const moveToOrders = () => {
-    navigate('/orders');
+    navigate('/feed');
   }
   
   const moveToProfile = () => {

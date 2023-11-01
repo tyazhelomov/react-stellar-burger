@@ -3,17 +3,16 @@ import { ProtectedRouteElement } from "./components/protected-route";
 import AppHeader from "./components/header/header";
 import IngredientDetails from './components/ingredient-details/ingredient-details';
 import Modal from './components/modal/modal';
-import { useDispatch } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { getIngredients } from './services/actions/get-ingredients';
 import { useCallback, useEffect } from 'react';
-import { MODAL_HEADER, WS_ENDPOINTS } from './utils/constants';
+import { MODAL_HEADER } from './utils/constants';
 import {
   HomePage,
   LoginPage,
   ForgotPasswordPage,
   IngredientPage,
   FeedPage,
-  FeedInfoPage,
   ProfilePage,
   OrdersPage,
   OrderInfoPage,
@@ -21,6 +20,7 @@ import {
   ResetPasswordPage,
   NotFound404,
 } from './pages';
+import OrderLayout from './components/order-layout/order-layout';
 
 function App() {
   const location = useLocation();
@@ -37,12 +37,9 @@ function App() {
     dispatch(getIngredients());
   }, [dispatch]);
 
-  useEffect(
-    () => {
-      dispatch({ type: 'WS_ALL_CONNECTION_START', endpoint: WS_ENDPOINTS.ALL });
-    },
-    [dispatch]
-  );
+  const { ingredients } = useSelector(store => ({
+    ingredients: store.ingredients,
+  }), shallowEqual);
 
   return (
     <>
@@ -54,14 +51,11 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/profile" element={<ProtectedRouteElement element={<ProfilePage />} />} >
-          <Route path="orders" element={<ProtectedRouteElement element={<OrdersPage />} />} >
-            <Route path=":id" element={<ProtectedRouteElement element={<OrderInfoPage />} />} />
-          </Route>
-        </Route>
-        <Route path="/feed" element={<FeedPage />} >
-          <Route path=":id" element={<FeedInfoPage />} />
-        </Route>
+        <Route path="/profile" element={<ProtectedRouteElement element={<ProfilePage />} />} />
+        <Route path="/profile/orders" element={<ProtectedRouteElement element={<OrdersPage />} />} />
+        <Route path="/profile/orders/:id" element={<ProtectedRouteElement element={<OrderInfoPage isUser={true} ingredients={ingredients} />} />} />
+        <Route path="/feed" element={<FeedPage />} />
+        <Route path="/feed/:id" element={<OrderInfoPage ingredients={ingredients} />} />
         <Route path="*" element={<NotFound404 />} />
       </Routes>
 
@@ -76,10 +70,10 @@ function App() {
               }
             />
             <Route
-              path='/orders/:id'
+              path='/profile/orders/:id'
               element={
                 <Modal onClose={closeModalFunc} title={ MODAL_HEADER.ORDER_INFO }>
-                  <FeedPage />
+                  <OrderLayout ingredients={ingredients} />
                 </Modal>
               }
             />
@@ -87,7 +81,7 @@ function App() {
               path='/feed/:id'
               element={
                 <Modal onClose={closeModalFunc} title={ MODAL_HEADER.ORDER_INFO }>
-                  <FeedPage />
+                  <OrderLayout ingredients={ingredients} />
                 </Modal>
               }
             />

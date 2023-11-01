@@ -1,170 +1,122 @@
-import { useCallback, useEffect, useState } from "react";
-import styles from './profile.module.css'
+import { useEffect } from "react";
+import styles from './feed.module.css';
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { Button, Input, PasswordInput } from "@ya.praktikum/react-developer-burger-ui-components";
-import { NavLink } from "react-router-dom";
-import { auth } from "../services/actions/auth";
-import { ENDPOINTS } from "../utils/constants";
-import { userStateSlice } from "../services/user-state";
-import { useForm } from "../hooks/useForm";
+import { WS_ENDPOINTS } from "../utils/constants";
+import OrderList from "../components/order-list/order-list";
 
 function FeedPage() {
-  const dispatch = useDispatch();
-  const { logoutUser } = userStateSlice.actions;
-  const { userState, errorState } = useSelector(store => ({
+  const { userState, wsAllState } = useSelector(store => ({
     userState: store.userState,
-    errorState: store.errorState,
+    wsAllState: store.wsAllState,
   }), shallowEqual);
 
-  useEffect(() => {
-    dispatch(
-      auth(
-        ENDPOINTS.USER_INFO,
-        'GET'
-      )
-    )
-  }, [dispatch])
-
-  const { values, handleChange } = useForm({ name: userState.user.name, email: userState.user.email, password: '' });
-
-  const updateUser = useCallback(
-    e => {
-      e.preventDefault();
-      dispatch(
-        auth(
-          ENDPOINTS.USER_INFO,
-          'PATCH',
-          {
-            "name": values.name,
-            "email": values.email, 
-            "password": values.password,
-          }
-        )
-      )
+  const dispatch = useDispatch();
+    useEffect(
+    () => {
+      dispatch({ type: 'WS_ALL_CONNECTION_START', endpoint: WS_ENDPOINTS.ALL });
     },
-    [dispatch, values]
+    [dispatch]
   );
 
-  const [fields, setFields] = useState({ name: false, email: false });
+  const isSocketConnected = wsAllState.wsConnected && wsAllState.messages?.orders?.length && !userState.isLoading;
+  const ordersSumAll = wsAllState.messages.total;
+  const ordersSumToday = wsAllState.messages.totalToday;
 
-  useEffect(() => {
-    setFields({ name: false, email: false })
-  }, [userState])
+  const getReadyOrders = () => {
+    const render = wsAllState.messages?.orders.reduce((acc, el) => {
+      if (acc.length < 10 && el.status === 'done') {
+        const number = el.number;
+        acc.push(
+          <div className={ `${ styles.numberReady } text text_type_digits-default` } key={number}>
+            { number }
+          </div>
+        )
+      }
 
-  const allowChanges = name => {
-    setFields({ ...fields, [name]: !fields[name] });
+      return acc;
+    }, [])
+
+    return render;
   }
 
-  const logout = useCallback(
-    e => {
-      e.preventDefault();
-      dispatch(
-        auth(
-          ENDPOINTS.LOGOUT,
-          'POST',
-          {
-            "token": localStorage.getItem('refreshToken')
-          }
+  const getInProgressOrders = () => {
+    const render = wsAllState.messages?.orders.reduce((acc, el) => {
+      if (acc.length < 10 && el.status === 'pending') {
+        const number = el.number;
+        acc.push(
+          <div className={ `text text_type_digits-default` } key={number}>
+            { number }
+          </div>
         )
-      );
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      dispatch(logoutUser())
-    },
-    [dispatch, logoutUser]
-  );
+      }
+
+      return acc;
+    }, [])
+
+    return render;
+  }
+
+  // Здесь порядок отображения иконок реализовано исходя из корректности отправки заказов другими студентами.
+  // Кто то отправляет 2 булки или еще что-то, поэтому отображение может быть не корректно.
+  // Основная логика: сперва идет булка, потом иконки ингредиентов, которые не повторяются, затем иконка ингредиента с остатком не отображенных.
 
   return (
-    <div className={styles.main}>
-      { userState.isLoading &&
-        <div className={styles.loading}>
-          <h1 className='text text_type_main-medium'>
-            Получаем информацию...
-          </h1>
-          <span className={styles.loader}></span>
-        </div>
-      }
-      { !userState.isLoading &&
-      <>
-          <div className={styles.links}>
-            <NavLink
-              to='/profile' end
-              className={styles.link}
-            >{({ isActive }) => (
-              <p className={ 
-                isActive
-                ? `${styles.link} text text_type_main-medium text_color_primary`
-                : `${styles.link} text text_type_main-medium text_color_inactive`}>Профиль</p>
-            )}</NavLink>
-            <NavLink
-              to='/profile/orders' end
-              className={styles.link}
-            >{({ isActive }) => (
-              <p className={ 
-                isActive
-                ? `${styles.link} text text_type_main-medium text_color_primary`
-                : `${styles.link} text text_type_main-medium text_color_inactive`}>История заказов</p>
-            )}</NavLink>
-            <button className={`${styles.exit} text text_type_main-medium text_color_inactive`} onClick={logout}>
-              Выход
-            </button>
-            <p className={`${styles.text} text text_type_main-default text_color_inactive`}>
-              В этом разделе вы можете изменить свои персональные данные
-            </p>
+    <>
+      <h1 className={`${ styles.header } text text_type_main-large`}>
+        Лента заказов
+      </h1>
+      <section className={styles.section}>
+        { !isSocketConnected &&
+          <div className={styles.loading}>
+            <h2 className='text text_type_main-medium'>
+              Получаем информацию...
+            </h2>
+            <span className={styles.loader}></span>
           </div>
-          <form onSubmit={updateUser}>
-            <div className={styles.input}>
-              <Input
-                type={'text'}
-                placeholder={'Имя'}
-                onChange={handleChange}
-                icon="EditIcon"
-                value={values.name}
-                name={'name'}
-                error={false}
-                errorText={'Ошибка'}
-                size={'default'}
-                onIconClick={() => allowChanges('name')}
-                disabled={!fields['name']}
-              />
-              <Input
-                type={'email'}
-                placeholder={'E-mail'}
-                onChange={handleChange}
-                icon="EditIcon"
-                value={values.email}
-                name={'email'}
-                error={false}
-                errorText={'Ошибка'}
-                size={'default'}
-                onIconClick={() => allowChanges('email')}
-                disabled={!fields['email']}
-              />
-              <PasswordInput
-                type={'password'}
-                onChange={handleChange}
-                value={values.password}
-                name={'password'}
-                icon="EditIcon"
-              />
-              <Button
-                htmlType="submit"
-                type="primary"
-                size="large"
-                extraClass={ styles.button }
-              >
-                Сохранить
-              </Button>
+        }
+        { isSocketConnected &&
+          <>
+            <div className={ styles.orderList }>
+              <OrderList socketState={ wsAllState } />
             </div>
-          </form>
-        </>
-      }
-      { errorState.error && 
-        <p className={`${ styles.error } text text_type_main-small`}>
-          { errorState.errorMsg }
-        </p>
-      }
-    </div>
+            <div className={ styles.info }>
+              <div className={ styles.statuses }>
+                <div className={ styles.ready }>
+                  <p className={`text text_type_main-medium`}>
+                    Готово:
+                  </p>
+                  <div className={ styles.numbers }>
+                    { getReadyOrders() }
+                  </div>
+                </div>
+                <div className={ styles.progress }>
+                  <p className={`text text_type_main-medium`}>
+                    В работе:
+                  </p>
+                  { getInProgressOrders() }
+                </div>
+              </div>
+              <div className={ styles.allOrders }>
+                <p className={`text text_type_main-medium`}>
+                  Выполнено за все время:
+                </p>
+                <p className={`${styles.total} text text_type_digits-large`}>
+                  { ordersSumAll }
+                </p>
+              </div>
+              <div className={ styles.allOrdersToday }>
+                <p className={`text text_type_main-medium`}>
+                  Выполнено за сегодня:
+                </p>
+                <p className={`${styles.total} text text_type_digits-large`}>
+                  { ordersSumToday }
+                </p>
+              </div>
+            </div>
+          </>
+        }
+      </section>
+    </>
   );
 }
 

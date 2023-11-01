@@ -1,59 +1,28 @@
-import { useCallback, useEffect, useState } from "react";
-import styles from './profile.module.css'
+import { useCallback, useEffect } from "react";
+import styles from './orders.module.css'
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { Button, Input, PasswordInput } from "@ya.praktikum/react-developer-burger-ui-components";
 import { NavLink } from "react-router-dom";
 import { auth } from "../services/actions/auth";
-import { ENDPOINTS } from "../utils/constants";
+import { ENDPOINTS, WS_ENDPOINTS } from "../utils/constants";
 import { userStateSlice } from "../services/user-state";
-import { useForm } from "../hooks/useForm";
+import OrderList from "../components/order-list/order-list";
 
 function OrdersPage() {
   const dispatch = useDispatch();
   const { logoutUser } = userStateSlice.actions;
-  const { userState, errorState } = useSelector(store => ({
+  const { userState, errorState, wsOwnerState } = useSelector(store => ({
     userState: store.userState,
     errorState: store.errorState,
+    wsOwnerState: store.wsOwnerState,
   }), shallowEqual);
 
-  useEffect(() => {
-    dispatch(
-      auth(
-        ENDPOINTS.USER_INFO,
-        'GET'
-      )
-    )
-  }, [dispatch])
-
-  const { values, handleChange } = useForm({ name: userState.user.name, email: userState.user.email, password: '' });
-
-  const updateUser = useCallback(
-    e => {
-      e.preventDefault();
-      dispatch(
-        auth(
-          ENDPOINTS.USER_INFO,
-          'PATCH',
-          {
-            "name": values.name,
-            "email": values.email, 
-            "password": values.password,
-          }
-        )
-      )
+  useEffect(
+    () => {
+      const token = localStorage.getItem('accessToken');
+      dispatch({ type: 'WS_OWNER_CONNECTION_START', endpoint: `${ WS_ENDPOINTS.OWNER }?token=${ userState.token || token }` });
     },
-    [dispatch, values]
+    [dispatch, userState.token]
   );
-
-  const [fields, setFields] = useState({ name: false, email: false });
-
-  useEffect(() => {
-    setFields({ name: false, email: false })
-  }, [userState])
-
-  const allowChanges = name => {
-    setFields({ ...fields, [name]: !fields[name] });
-  }
 
   const logout = useCallback(
     e => {
@@ -85,7 +54,7 @@ function OrdersPage() {
         </div>
       }
       { !userState.isLoading &&
-      <>
+        <>
           <div className={styles.links}>
             <NavLink
               to='/profile' end
@@ -109,54 +78,10 @@ function OrdersPage() {
               Выход
             </button>
             <p className={`${styles.text} text text_type_main-default text_color_inactive`}>
-              В этом разделе вы можете изменить свои персональные данные
+              В этом разделе вы можете просмотреть свою историю заказов
             </p>
           </div>
-          <form onSubmit={updateUser}>
-            <div className={styles.input}>
-              <Input
-                type={'text'}
-                placeholder={'Имя'}
-                onChange={handleChange}
-                icon="EditIcon"
-                value={values.name}
-                name={'name'}
-                error={false}
-                errorText={'Ошибка'}
-                size={'default'}
-                onIconClick={() => allowChanges('name')}
-                disabled={!fields['name']}
-              />
-              <Input
-                type={'email'}
-                placeholder={'E-mail'}
-                onChange={handleChange}
-                icon="EditIcon"
-                value={values.email}
-                name={'email'}
-                error={false}
-                errorText={'Ошибка'}
-                size={'default'}
-                onIconClick={() => allowChanges('email')}
-                disabled={!fields['email']}
-              />
-              <PasswordInput
-                type={'password'}
-                onChange={handleChange}
-                value={values.password}
-                name={'password'}
-                icon="EditIcon"
-              />
-              <Button
-                htmlType="submit"
-                type="primary"
-                size="large"
-                extraClass={ styles.button }
-              >
-                Сохранить
-              </Button>
-            </div>
-          </form>
+          <OrderList socketState={ wsOwnerState } isProfile={true} />
         </>
       }
       { errorState.error && 

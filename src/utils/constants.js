@@ -40,3 +40,24 @@ export const WS_ENDPOINTS = {
   ALL: '/orders/all',
   OWNER: '/orders',
 }
+
+export const MONTHS_MAP = {
+  1: 'января',
+  2: 'февраля',
+  3: 'марта',
+  4: 'апреля',
+  5: 'мая',
+  6: 'июня',
+  7: 'июля',
+  8: 'августа',
+  9: 'сентября',
+  10: 'октября',
+  11: 'ноября',
+  12: 'декабря',
+}
+
+export const STATUS_MAP = {
+  done: 'Готово',
+  created: 'Создано',
+  pending: 'В работе',
+}
