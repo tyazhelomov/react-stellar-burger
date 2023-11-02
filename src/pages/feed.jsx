@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 import styles from './feed.module.css';
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { WS_ENDPOINTS } from "../utils/constants";
+import { WS_ENDPOINTS, WS_URL } from "../utils/constants";
 import OrderList from "../components/order-list/order-list";
+import { WS_ALL_CLOSE, WS_ALL_CONNECTION_START } from "../services/actions/socket";
 
 function FeedPage() {
   const { userState, wsAllState } = useSelector(store => ({
@@ -13,7 +14,11 @@ function FeedPage() {
   const dispatch = useDispatch();
     useEffect(
     () => {
-      dispatch({ type: 'WS_ALL_CONNECTION_START', endpoint: WS_ENDPOINTS.ALL });
+      dispatch({ type: WS_ALL_CONNECTION_START, url: `${ WS_URL }${ WS_ENDPOINTS.ALL }` });
+      
+      return () => {
+        dispatch({ type: WS_ALL_CLOSE });
+      };
     },
     [dispatch]
   );

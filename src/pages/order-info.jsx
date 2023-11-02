@@ -3,8 +3,9 @@ import styles from './order-info.module.css'
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { getIngredients } from "../services/actions/get-ingredients";
-import { WS_ENDPOINTS } from "../utils/constants";
+import { WS_ENDPOINTS, WS_URL } from "../utils/constants";
 import OrderInfo from "../components/order-info/order-info";
+import { WS_ALL_CLOSE, WS_ALL_CONNECTION_START, WS_OWNER_CLOSE, WS_OWNER_CONNECTION_START } from "../services/actions/socket";
 
 function OrderInfoPage({ isUser = false, ingredients }) {
   const dispatch = useDispatch();
@@ -24,10 +25,15 @@ function OrderInfoPage({ isUser = false, ingredients }) {
     () => {
       if (isUser) {
         const token = localStorage.getItem('accessToken');
-        dispatch({ type: 'WS_OWNER_CONNECTION_START', endpoint: `${ WS_ENDPOINTS.OWNER }?token=${ userState.token || token }` });
+        dispatch({ type: WS_OWNER_CONNECTION_START, url: `${ WS_URL }${ WS_ENDPOINTS.OWNER }?token=${ userState.token || token }` });
       } else {
-        dispatch({ type: 'WS_ALL_CONNECTION_START', endpoint: WS_ENDPOINTS.ALL });
+        dispatch({ type: WS_ALL_CONNECTION_START, url: `${ WS_URL }${ WS_ENDPOINTS.ALL }` });
       }
+      
+      return () => {
+        dispatch({ type: WS_OWNER_CLOSE });
+        dispatch({ type: WS_ALL_CLOSE });
+      };
     },
     [dispatch, isUser, userState.token]
   );

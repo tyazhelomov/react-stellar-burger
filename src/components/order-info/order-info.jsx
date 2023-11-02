@@ -55,10 +55,9 @@ function OrderInfo({ element = {}, ingredients }) {
 
   const renderIngredients = () => {
     const ingredients = order.ingredients;
-    const ingredientsMap = {};
 
     const configureMap = ingredients.reduce((acc, el) => {
-      if (!ingredientsMap[el]) {
+      if (!acc[el]) {
         acc[el] = 1;
       } else {
         acc[el] += 1;

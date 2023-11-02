@@ -3,9 +3,10 @@ import styles from './orders.module.css'
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import { auth } from "../services/actions/auth";
-import { ENDPOINTS, WS_ENDPOINTS } from "../utils/constants";
+import { ENDPOINTS, WS_ENDPOINTS, WS_URL } from "../utils/constants";
 import { userStateSlice } from "../services/user-state";
 import OrderList from "../components/order-list/order-list";
+import { WS_OWNER_CLOSE, WS_OWNER_CONNECTION_START } from "../services/actions/socket";
 
 function OrdersPage() {
   const dispatch = useDispatch();
@@ -19,7 +20,11 @@ function OrdersPage() {
   useEffect(
     () => {
       const token = localStorage.getItem('accessToken');
-      dispatch({ type: 'WS_OWNER_CONNECTION_START', endpoint: `${ WS_ENDPOINTS.OWNER }?token=${ userState.token || token }` });
+      dispatch({ type: WS_OWNER_CONNECTION_START, url: `${ WS_URL }${ WS_ENDPOINTS.OWNER }?token=${ userState.token || token }` });
+      
+      return () => {
+        dispatch({ type: WS_OWNER_CLOSE });
+      };
     },
     [dispatch, userState.token]
   );
