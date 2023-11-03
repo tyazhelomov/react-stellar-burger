@@ -31,40 +31,42 @@ const OrderItem = ({ element, isProfile }) => {
 
     const render = ingredients.reduce((acc, el) => {
       const ingredientState = allIngredients.find(ingredient => ingredient._id === el);
-      if (!ingredientsMap[el]) {
-        ingredientsMap[el] = 1;
-      } else {
-        ingredientsMap[el] += 1;
-      }
-
-      if (ingredientsMap[el] > 1) {
-        return acc;
-      }
-
-      const total = Object.keys(ingredientsMap).length;
-      const totalIngredients = Object.keys(configureMap).length;
-
-      if (ingredientState.type === TAB_VALUES.bun || (total > 1 && total < 6)) {
-        acc.push(
-          <div className={ styles.pic } key={`${element.number}${el}`}>
-            <div className={styles.border}>
-              <img className={styles.image} src={ ingredientState.image_mobile } alt={ ingredientState.name } />
+      if (ingredientState) {
+        if (!ingredientsMap[el]) {
+          ingredientsMap[el] = 1;
+        } else {
+          ingredientsMap[el] += 1;
+        }
+  
+        if (ingredientsMap[el] > 1) {
+          return acc;
+        }
+  
+        const total = Object.keys(ingredientsMap).length;
+        const totalIngredients = Object.keys(configureMap).length;
+  
+        if (ingredientState.type === TAB_VALUES.bun || (total > 1 && total < 6)) {
+          acc.push(
+            <div className={ styles.pic } key={`${element.number}${el}`}>
+              <div className={styles.border}>
+                <img className={styles.image} src={ ingredientState.image_mobile } alt={ ingredientState.name } />
+              </div>
             </div>
-          </div>
-        )
-      } else if (total === 1) {
-        acc.push(
-          <div className={ styles.pic } key={`${element.number}${el}`}>
-            <div className={styles.border}>
-              {
-                totalIngredients - 6 > 0 && <p className={ `${ styles.lastPicText } text text_type_digits-default` }>
-                  { `+${ totalIngredients - 6 }` }
-                </p>
-              }
-              <img className={styles.image} src={ ingredientState.image_mobile } alt={ ingredientState.name } />
+          )
+        } else if (total === 1) {
+          acc.push(
+            <div className={ styles.pic } key={`${element.number}${el}`}>
+              <div className={styles.border}>
+                {
+                  totalIngredients - 6 > 0 && <p className={ `${ styles.lastPicText } text text_type_digits-default` }>
+                    { `+${ totalIngredients - 6 }` }
+                  </p>
+                }
+                <img className={styles.image} src={ ingredientState.image_mobile } alt={ ingredientState.name } />
+              </div>
             </div>
-          </div>
-        )
+          )
+        }
       }
 
       return acc;
@@ -78,10 +80,12 @@ const OrderItem = ({ element, isProfile }) => {
     const cost = ingredients.reduce((acc, el) => {
       const ingredientState = allIngredients.find(ingredient => ingredient._id === el);
 
-      if (ingredientState.type === TAB_VALUES.bun) {
-        acc += ingredientState.price * 2;
-      } else {
-        acc += ingredientState.price;
+      if (ingredientState) {
+        if (ingredientState.type === TAB_VALUES.bun) {
+          acc += ingredientState.price * 2;
+        } else {
+          acc += ingredientState.price;
+        }
       }
       
       return acc;
