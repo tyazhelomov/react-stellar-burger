@@ -1,12 +1,30 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-import App from "./components/app/app";
+import App from "./app";
 import reportWebVitals from "./reportWebVitals";
+import { Provider } from "react-redux";
+import thunk from "redux-thunk";
+import { configureStore } from "@reduxjs/toolkit";
+import { rootReducer } from "./services";
+import { HashRouter as Router } from "react-router-dom";
+import { socketMiddleware } from './middleware/socketMiddleware';
+
+const store = configureStore({
+  reducer: rootReducer,
+  middleware: [
+    thunk,
+    socketMiddleware(),
+  ]
+})
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+      <Router>
+        <App />
+      </Router>
+    </Provider>
   </React.StrictMode>,
   document.getElementById("root")
 );

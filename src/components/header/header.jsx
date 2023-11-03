@@ -1,12 +1,27 @@
+import { useNavigate } from "react-router-dom";
 import styles from "./header.module.css";
 import { BurgerIcon, Button, ListIcon, Logo, ProfileIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 
 function AppHeader() {
+  const navigate = useNavigate();
+
+  const moveToHomePage = () => {
+    navigate('/');
+  }
+  
+  const moveToOrders = () => {
+    navigate('/feed');
+  }
+  
+  const moveToProfile = () => {
+    navigate('/profile');
+  }
+
   return (
     <header className={styles.header}>
       <nav className={styles.toolBar}>
         <div className={styles.navigation}>
-          <Button htmlType="button" type="secondary" size="small">
+          <Button htmlType="button" type="secondary" size="small" onClick={moveToHomePage}>
             <div className={styles.button}>
               <BurgerIcon type="primary" />
               <p className="text text_type_main-small">
@@ -14,7 +29,7 @@ function AppHeader() {
               </p>
             </div>
           </Button>
-          <Button htmlType="button" type="secondary" size="small">
+          <Button htmlType="button" type="secondary" size="small" onClick={moveToOrders}>
             <div className={styles.button}>
               <ListIcon type="primary"/>
               <p className="text text_type_main-small">
@@ -23,9 +38,11 @@ function AppHeader() {
             </div>
           </Button>
         </div>
-        <Logo />
+        <button className={styles.button} onClick={moveToHomePage}>
+          <Logo />
+        </button>
         <div className={styles.profile}>
-          <Button htmlType="button" type="secondary" size="small">
+          <Button htmlType="button" type="secondary" size="small" onClick={moveToProfile}>
             <div className={styles.button}>
               <ProfileIcon type="primary"/>
               <p className="text text_type_main-small">

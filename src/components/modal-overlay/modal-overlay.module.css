@@ -11,4 +11,5 @@
   align-items: center;
   transition: all .5s ease-in;
   z-index: 1;
+  /* cursor: pointer; */
 }

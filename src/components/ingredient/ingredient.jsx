@@ -1,28 +1,36 @@
+import { useDrag } from "react-dnd";
 import { Counter, CurrencyIcon } from '@ya.praktikum/react-developer-burger-ui-components';
 import styles from './ingredient.module.css';
-import { TAB_VALUES } from '../app/app';
-import { funcPropType, ingredientPropType, ingredientsObjectPropType } from '../../utils/prop-types';
+import { ingredientPropType } from '../../utils/prop-types';
+import { TAB_VALUES } from '../../utils/constants';
+import { shallowEqual, useSelector } from 'react-redux';
+import { useLocation, useNavigate } from "react-router-dom";
 
-function Ingredient({ element, chosenIngredients, addIngredient, openModal }) {
+function Ingredient({ element }) {
+  const { chosenIngredients } = useSelector(store => ({
+    chosenIngredients: store.chosenIngredients,
+  }), shallowEqual);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [, dragRef] = useDrag({
+    type: "ingredient",
+    item: element,
+  });
+
   const isAdded = () => {
     const type = element.type === TAB_VALUES.bun ? TAB_VALUES.bun : TAB_VALUES.other;
-    const item = (chosenIngredients[type] || []).find((el) => el._id === element._id);
+    const amount = (chosenIngredients[type] || []).reduce((acc, el) => el._id === element._id ? acc + 1 : acc, 0);
 
-    return item?.count;
+    return amount || undefined;
   }
 
-  const addInfoAndOpenModal = (element) => {
-    const info = {
-      header: 'Детали ингредиента',
-      ingredient: true,
-      element,
-    }
-
-    openModal(info);
+  const openIngredientInfo = (element) => {
+    navigate(`/ingredients/${element._id}`, { state: { background: location, element, from: location }})
   }
 
   return (
-    <div className={styles.item} onClick={(e) => addIngredient(e, element)}>
+    <div className={styles.item} onClick={(e) => openIngredientInfo(element)} ref={dragRef}>
       <div>
         { isAdded() && <Counter count={isAdded()} size="small"/>}
       </div>
@@ -31,7 +39,7 @@ function Ingredient({ element, chosenIngredients, addIngredient, openModal }) {
         <CurrencyIcon type="primary" />
         <p className="text text_type_digits-default">{ element.price }</p>
       </div>
-      <p className="text text_type_main-small" onClick={() => addInfoAndOpenModal(element)}>
+      <p className="text text_type_main-small">
         { element.name }
       </p>
     </div>
@@ -41,8 +49,5 @@ function Ingredient({ element, chosenIngredients, addIngredient, openModal }) {
 export default Ingredient;
 
 Ingredient.propTypes = {
-  chosenIngredients: ingredientsObjectPropType,
   element: ingredientPropType,
-  addIngredient: funcPropType,
-  openModal: funcPropType,
 }; 
