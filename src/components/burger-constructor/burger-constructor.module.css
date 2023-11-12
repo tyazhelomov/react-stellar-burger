@@ -31,14 +31,6 @@
 	border-radius: 6px;
 }
 
-.element {
-  display: flex;
-  margin-right: 4px;
-  margin-left: 10px;
-  align-items: center;
-  justify-content: space-between;
-}
-
 .locked {
   margin-right: 16px;
   margin-left: auto;
@@ -47,7 +39,7 @@
 .count {
   display: flex;
   margin: 16px;
-  justify-content: end;
+  justify-content: flex-end;
   align-items: center;
   gap: 40px;
 }

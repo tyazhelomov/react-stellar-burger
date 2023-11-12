@@ -1,0 +1,9 @@
+.element {
+  display: flex;
+  margin-right: 4px;
+  margin-left: 10px;
+  align-items: center;
+  justify-content: space-between;
+  transform: translate(0, 0);
+  cursor: grab;
+}
