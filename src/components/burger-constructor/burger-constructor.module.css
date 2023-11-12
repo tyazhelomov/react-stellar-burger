@@ -39,7 +39,7 @@
 .count {
   display: flex;
   margin: 16px;
-  justify-content: end;
+  justify-content: flex-end;
   align-items: center;
   gap: 40px;
 }
